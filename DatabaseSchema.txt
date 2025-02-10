@@ -1,0 +1,292 @@
+ Table: meta
+   Column: date  Type: DATE  NotNull: 0  Default: null
+   Column: version  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: sets
+   Column: baseSetSize  Type: INTEGER  NotNull: 0  Default: null
+   Column: block  Type: TEXT  NotNull: 0  Default: null
+   Column: cardsphereSetId  Type: INTEGER  NotNull: 0  Default: null
+   Column: code  Type: VARCHAR(8)  NotNull: 1  Default: null
+   Column: isFoilOnly  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isForeignOnly  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isNonFoilOnly  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isOnlineOnly  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isPartialPreview  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: keyruneCode  Type: TEXT  NotNull: 0  Default: null
+   Column: languages  Type: TEXT  NotNull: 0  Default: null
+   Column: mcmId  Type: INTEGER  NotNull: 0  Default: null
+   Column: mcmIdExtras  Type: INTEGER  NotNull: 0  Default: null
+   Column: mcmName  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgoCode  Type: TEXT  NotNull: 0  Default: null
+   Column: name  Type: TEXT  NotNull: 0  Default: null
+   Column: parentCode  Type: TEXT  NotNull: 0  Default: null
+   Column: releaseDate  Type: TEXT  NotNull: 0  Default: null
+   Column: tcgplayerGroupId  Type: INTEGER  NotNull: 0  Default: null
+   Column: tokenSetCode  Type: TEXT  NotNull: 0  Default: null
+   Column: totalSetSize  Type: INTEGER  NotNull: 0  Default: null
+   Column: type  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: cards
+   Column: artist  Type: TEXT  NotNull: 0  Default: null
+   Column: artistIds  Type: TEXT  NotNull: 0  Default: null
+   Column: asciiName  Type: TEXT  NotNull: 0  Default: null
+   Column: attractionLights  Type: TEXT  NotNull: 0  Default: null
+   Column: availability  Type: TEXT  NotNull: 0  Default: null
+   Column: boosterTypes  Type: TEXT  NotNull: 0  Default: null
+   Column: borderColor  Type: TEXT  NotNull: 0  Default: null
+   Column: cardParts  Type: TEXT  NotNull: 0  Default: null
+   Column: colorIdentity  Type: TEXT  NotNull: 0  Default: null
+   Column: colorIndicator  Type: TEXT  NotNull: 0  Default: null
+   Column: colors  Type: TEXT  NotNull: 0  Default: null
+   Column: defense  Type: TEXT  NotNull: 0  Default: null
+   Column: duelDeck  Type: TEXT  NotNull: 0  Default: null
+   Column: edhrecRank  Type: INTEGER  NotNull: 0  Default: null
+   Column: edhrecSaltiness  Type: FLOAT  NotNull: 0  Default: null
+   Column: faceConvertedManaCost  Type: FLOAT  NotNull: 0  Default: null
+   Column: faceFlavorName  Type: TEXT  NotNull: 0  Default: null
+   Column: faceManaValue  Type: FLOAT  NotNull: 0  Default: null
+   Column: faceName  Type: TEXT  NotNull: 0  Default: null
+   Column: finishes  Type: TEXT  NotNull: 0  Default: null
+   Column: flavorName  Type: TEXT  NotNull: 0  Default: null
+   Column: flavorText  Type: TEXT  NotNull: 0  Default: null
+   Column: frameEffects  Type: TEXT  NotNull: 0  Default: null
+   Column: frameVersion  Type: TEXT  NotNull: 0  Default: null
+   Column: hand  Type: TEXT  NotNull: 0  Default: null
+   Column: hasAlternativeDeckLimit  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: hasContentWarning  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: hasFoil  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: hasNonFoil  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isAlternative  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isFullArt  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isFunny  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isOnlineOnly  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isOversized  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isPromo  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isRebalanced  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isReprint  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isReserved  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isStarter  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isStorySpotlight  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isTextless  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isTimeshifted  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: keywords  Type: TEXT  NotNull: 0  Default: null
+   Column: language  Type: TEXT  NotNull: 0  Default: null
+   Column: layout  Type: TEXT  NotNull: 0  Default: null
+   Column: leadershipSkills  Type: TEXT  NotNull: 0  Default: null
+   Column: life  Type: TEXT  NotNull: 0  Default: null
+   Column: loyalty  Type: TEXT  NotNull: 0  Default: null
+   Column: manaCost  Type: TEXT  NotNull: 0  Default: null
+   Column: manaValue  Type: FLOAT  NotNull: 0  Default: null
+   Column: name  Type: TEXT  NotNull: 0  Default: null
+   Column: number  Type: TEXT  NotNull: 0  Default: null
+   Column: originalPrintings  Type: TEXT  NotNull: 0  Default: null
+   Column: originalReleaseDate  Type: TEXT  NotNull: 0  Default: null
+   Column: originalText  Type: TEXT  NotNull: 0  Default: null
+   Column: originalType  Type: TEXT  NotNull: 0  Default: null
+   Column: otherFaceIds  Type: TEXT  NotNull: 0  Default: null
+   Column: power  Type: TEXT  NotNull: 0  Default: null
+   Column: printings  Type: TEXT  NotNull: 0  Default: null
+   Column: promoTypes  Type: TEXT  NotNull: 0  Default: null
+   Column: rarity  Type: TEXT  NotNull: 0  Default: null
+   Column: rebalancedPrintings  Type: TEXT  NotNull: 0  Default: null
+   Column: relatedCards  Type: TEXT  NotNull: 0  Default: null
+   Column: securityStamp  Type: TEXT  NotNull: 0  Default: null
+   Column: setCode  Type: TEXT  NotNull: 0  Default: null
+   Column: side  Type: TEXT  NotNull: 0  Default: null
+   Column: signature  Type: TEXT  NotNull: 0  Default: null
+   Column: sourceProducts  Type: TEXT  NotNull: 0  Default: null
+   Column: subsets  Type: TEXT  NotNull: 0  Default: null
+   Column: subtypes  Type: TEXT  NotNull: 0  Default: null
+   Column: supertypes  Type: TEXT  NotNull: 0  Default: null
+   Column: text  Type: TEXT  NotNull: 0  Default: null
+   Column: toughness  Type: TEXT  NotNull: 0  Default: null
+   Column: type  Type: TEXT  NotNull: 0  Default: null
+   Column: types  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: VARCHAR(36)  NotNull: 1  Default: null
+   Column: variations  Type: TEXT  NotNull: 0  Default: null
+   Column: watermark  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: tokens
+   Column: artist  Type: TEXT  NotNull: 0  Default: null
+   Column: artistIds  Type: TEXT  NotNull: 0  Default: null
+   Column: asciiName  Type: TEXT  NotNull: 0  Default: null
+   Column: availability  Type: TEXT  NotNull: 0  Default: null
+   Column: boosterTypes  Type: TEXT  NotNull: 0  Default: null
+   Column: borderColor  Type: TEXT  NotNull: 0  Default: null
+   Column: colorIdentity  Type: TEXT  NotNull: 0  Default: null
+   Column: colors  Type: TEXT  NotNull: 0  Default: null
+   Column: edhrecSaltiness  Type: FLOAT  NotNull: 0  Default: null
+   Column: faceName  Type: TEXT  NotNull: 0  Default: null
+   Column: finishes  Type: TEXT  NotNull: 0  Default: null
+   Column: flavorName  Type: TEXT  NotNull: 0  Default: null
+   Column: flavorText  Type: TEXT  NotNull: 0  Default: null
+   Column: frameEffects  Type: TEXT  NotNull: 0  Default: null
+   Column: frameVersion  Type: TEXT  NotNull: 0  Default: null
+   Column: hasFoil  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: hasNonFoil  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isFullArt  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isFunny  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isOversized  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isPromo  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isReprint  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: isTextless  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: keywords  Type: TEXT  NotNull: 0  Default: null
+   Column: language  Type: TEXT  NotNull: 0  Default: null
+   Column: layout  Type: TEXT  NotNull: 0  Default: null
+   Column: manaCost  Type: TEXT  NotNull: 0  Default: null
+   Column: name  Type: TEXT  NotNull: 0  Default: null
+   Column: number  Type: TEXT  NotNull: 0  Default: null
+   Column: orientation  Type: TEXT  NotNull: 0  Default: null
+   Column: originalText  Type: TEXT  NotNull: 0  Default: null
+   Column: originalType  Type: TEXT  NotNull: 0  Default: null
+   Column: otherFaceIds  Type: TEXT  NotNull: 0  Default: null
+   Column: power  Type: TEXT  NotNull: 0  Default: null
+   Column: promoTypes  Type: TEXT  NotNull: 0  Default: null
+   Column: relatedCards  Type: TEXT  NotNull: 0  Default: null
+   Column: reverseRelated  Type: TEXT  NotNull: 0  Default: null
+   Column: securityStamp  Type: TEXT  NotNull: 0  Default: null
+   Column: setCode  Type: TEXT  NotNull: 0  Default: null
+   Column: side  Type: TEXT  NotNull: 0  Default: null
+   Column: signature  Type: TEXT  NotNull: 0  Default: null
+   Column: subtypes  Type: TEXT  NotNull: 0  Default: null
+   Column: supertypes  Type: TEXT  NotNull: 0  Default: null
+   Column: text  Type: TEXT  NotNull: 0  Default: null
+   Column: toughness  Type: TEXT  NotNull: 0  Default: null
+   Column: type  Type: TEXT  NotNull: 0  Default: null
+   Column: types  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: VARCHAR(36)  NotNull: 1  Default: null
+   Column: watermark  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: cardIdentifiers
+   Column: cardKingdomEtchedId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardKingdomFoilId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardKingdomId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardsphereFoilId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardsphereId  Type: TEXT  NotNull: 0  Default: null
+   Column: deckboxId  Type: TEXT  NotNull: 0  Default: null
+   Column: mcmId  Type: TEXT  NotNull: 0  Default: null
+   Column: mcmMetaId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgArenaId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgjsonFoilVersionId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgjsonNonFoilVersionId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgjsonV4Id  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgoFoilId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgoId  Type: TEXT  NotNull: 0  Default: null
+   Column: multiverseId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallCardBackId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallIllustrationId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallOracleId  Type: TEXT  NotNull: 0  Default: null
+   Column: tcgplayerEtchedProductId  Type: TEXT  NotNull: 0  Default: null
+   Column: tcgplayerProductId  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: cardLegalities
+   Column: alchemy  Type: TEXT  NotNull: 0  Default: null
+   Column: brawl  Type: TEXT  NotNull: 0  Default: null
+   Column: commander  Type: TEXT  NotNull: 0  Default: null
+   Column: duel  Type: TEXT  NotNull: 0  Default: null
+   Column: explorer  Type: TEXT  NotNull: 0  Default: null
+   Column: future  Type: TEXT  NotNull: 0  Default: null
+   Column: gladiator  Type: TEXT  NotNull: 0  Default: null
+   Column: historic  Type: TEXT  NotNull: 0  Default: null
+   Column: legacy  Type: TEXT  NotNull: 0  Default: null
+   Column: modern  Type: TEXT  NotNull: 0  Default: null
+   Column: oathbreaker  Type: TEXT  NotNull: 0  Default: null
+   Column: oldschool  Type: TEXT  NotNull: 0  Default: null
+   Column: pauper  Type: TEXT  NotNull: 0  Default: null
+   Column: paupercommander  Type: TEXT  NotNull: 0  Default: null
+   Column: penny  Type: TEXT  NotNull: 0  Default: null
+   Column: pioneer  Type: TEXT  NotNull: 0  Default: null
+   Column: predh  Type: TEXT  NotNull: 0  Default: null
+   Column: premodern  Type: TEXT  NotNull: 0  Default: null
+   Column: standard  Type: TEXT  NotNull: 0  Default: null
+   Column: standardbrawl  Type: TEXT  NotNull: 0  Default: null
+   Column: timeless  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: TEXT  NotNull: 0  Default: null
+   Column: vintage  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: cardRulings
+   Column: date  Type: DATE  NotNull: 0  Default: null
+   Column: text  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: VARCHAR(36)  NotNull: 1  Default: null
+ --------------------
+ Table: cardForeignData
+   Column: faceName  Type: TEXT  NotNull: 0  Default: null
+   Column: flavorText  Type: TEXT  NotNull: 0  Default: null
+   Column: identifiers  Type: TEXT  NotNull: 0  Default: null
+   Column: language  Type: TEXT  NotNull: 0  Default: null
+   Column: multiverseId  Type: INTEGER  NotNull: 0  Default: null
+   Column: name  Type: TEXT  NotNull: 0  Default: null
+   Column: text  Type: TEXT  NotNull: 0  Default: null
+   Column: type  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: cardPurchaseUrls
+   Column: cardKingdom  Type: TEXT  NotNull: 0  Default: null
+   Column: cardKingdomEtched  Type: TEXT  NotNull: 0  Default: null
+   Column: cardKingdomFoil  Type: TEXT  NotNull: 0  Default: null
+   Column: cardmarket  Type: TEXT  NotNull: 0  Default: null
+   Column: tcgplayer  Type: TEXT  NotNull: 0  Default: null
+   Column: tcgplayerEtched  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: tokenIdentifiers
+   Column: cardKingdomEtchedId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardKingdomFoilId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardKingdomId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardsphereFoilId  Type: TEXT  NotNull: 0  Default: null
+   Column: cardsphereId  Type: TEXT  NotNull: 0  Default: null
+   Column: deckboxId  Type: TEXT  NotNull: 0  Default: null
+   Column: mcmId  Type: TEXT  NotNull: 0  Default: null
+   Column: mcmMetaId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgArenaId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgjsonFoilVersionId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgjsonNonFoilVersionId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgjsonV4Id  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgoFoilId  Type: TEXT  NotNull: 0  Default: null
+   Column: mtgoId  Type: TEXT  NotNull: 0  Default: null
+   Column: multiverseId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallCardBackId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallIllustrationId  Type: TEXT  NotNull: 0  Default: null
+   Column: scryfallOracleId  Type: TEXT  NotNull: 0  Default: null
+   Column: tcgplayerEtchedProductId  Type: TEXT  NotNull: 0  Default: null
+   Column: tcgplayerProductId  Type: TEXT  NotNull: 0  Default: null
+   Column: uuid  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: setTranslations
+   Column: language  Type: TEXT  NotNull: 0  Default: null
+   Column: setCode  Type: VARCHAR(20)  NotNull: 0  Default: null
+   Column: translation  Type: TEXT  NotNull: 0  Default: null
+ --------------------
+ Table: setBoosterContents
+   Column: boosterIndex  Type: INTEGER  NotNull: 0  Default: null
+   Column: boosterName  Type: VARCHAR(255)  NotNull: 0  Default: null
+   Column: setCode  Type: VARCHAR(20)  NotNull: 0  Default: null
+   Column: sheetName  Type: VARCHAR(255)  NotNull: 0  Default: null
+   Column: sheetPicks  Type: INTEGER  NotNull: 0  Default: null
+ --------------------
+ Table: setBoosterContentWeights
+   Column: boosterIndex  Type: INTEGER  NotNull: 0  Default: null
+   Column: boosterName  Type: VARCHAR(255)  NotNull: 0  Default: null
+   Column: boosterWeight  Type: INTEGER  NotNull: 0  Default: null
+   Column: setCode  Type: VARCHAR(20)  NotNull: 0  Default: null
+ --------------------
+ Table: setBoosterSheets
+   Column: boosterName  Type: VARCHAR(255)  NotNull: 0  Default: null
+   Column: setCode  Type: VARCHAR(20)  NotNull: 0  Default: null
+   Column: sheetHasBalanceColors  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: sheetIsFoil  Type: BOOLEAN  NotNull: 0  Default: null
+   Column: sheetName  Type: VARCHAR(255)  NotNull: 0  Default: null
+ --------------------
+ Table: setBoosterSheetCards
+   Column: boosterName  Type: VARCHAR(255)  NotNull: 0  Default: null
+   Column: cardUuid  Type: VARCHAR(36)  NotNull: 1  Default: null
+   Column: cardWeight  Type: BIGINT  NotNull: 0  Default: null
+   Column: setCode  Type: VARCHAR(20)  NotNull: 0  Default: null
+   Column: sheetName  Type: VARCHAR(255)  NotNull: 0  Default: null
+ --------------------
+ Table: android_metadata
+   Column: locale  Type: TEXT  NotNull: 0  Default: null
+ --------------------
