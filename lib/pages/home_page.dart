@@ -8,7 +8,7 @@ import '../models/set_model.dart';
 class HomePage extends StatefulWidget {
   final Database database;
 
-  const HomePage({Key? key, required this.database}) : super(key: key);
+  const HomePage({super.key, required this.database});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -38,25 +38,26 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Codex Etherium Dashboard"),
+        title: const Text("Codex Etherium Dashboard"),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _fetchDashboardData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error loading data: ${snapshot.error}"));
+            return Center(child: Text("Error: ${snapshot.error}"));
           } else {
             final MetaModel? meta = snapshot.data!['meta'] as MetaModel?;
-            final List<SetModel> sets = snapshot.data!['sets'] as List<SetModel>;
+            final List<SetModel> sets =
+                snapshot.data!['sets'] as List<SetModel>;
 
             return SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Database Info",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
@@ -64,12 +65,13 @@ class _HomePageState extends State<HomePage> {
                   meta != null
                       ? Text(
                           "Version: ${meta.version ?? "Unknown"}\n"
-                          "Last Updated: ${meta.date != null ? meta.date!.toIso8601String().substring(0, 10) : "Unknown"}",
-                          style: TextStyle(fontSize: 16),
+                          "Last Updated: ${meta.date?.toIso8601String().substring(0, 10) ?? "Unknown"}",
+                          style: const TextStyle(fontSize: 16),
                         )
-                      : Text("No meta information available.", style: TextStyle(fontSize: 16)),
+                      : const Text("No meta information available.",
+                          style: TextStyle(fontSize: 16)),
                   const SizedBox(height: 24),
-                  Text(
+                  const Text(
                     "Available Sets",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
@@ -77,9 +79,9 @@ class _HomePageState extends State<HomePage> {
                   sets.isNotEmpty
                       ? ListView.separated(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: sets.length,
-                          separatorBuilder: (context, index) => Divider(),
+                          separatorBuilder: (context, index) => const Divider(),
                           itemBuilder: (context, index) {
                             final SetModel set = sets[index];
                             return ListTile(
@@ -88,7 +90,8 @@ class _HomePageState extends State<HomePage> {
                             );
                           },
                         )
-                      : Text("No sets found.", style: TextStyle(fontSize: 16)),
+                      : const Text("No sets found.",
+                          style: TextStyle(fontSize: 16)),
                 ],
               ),
             );

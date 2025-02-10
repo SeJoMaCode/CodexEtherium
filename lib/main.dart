@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
-import 'package:sqflite/sqflite.dart';
-import 'pages/home_page.dart'; // Import the updated HomePage
+import 'pages/database_loader_screen.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load the database using your DatabaseHelper.
-  final Database db = await DatabaseHelper.loadDatabase();
-
-  runApp(CodexEtheriumApp(database: db));
+  runApp(const CodexEtheriumApp());
 }
 
 class CodexEtheriumApp extends StatelessWidget {
-  final Database database;
-
-  const CodexEtheriumApp({Key? key, required this.database}) : super(key: key);
+  const CodexEtheriumApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +16,7 @@ class CodexEtheriumApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(database: database), // Use the imported HomePage
+      home: const DatabaseLoaderScreen(), // Start with the loader
     );
   }
 }
