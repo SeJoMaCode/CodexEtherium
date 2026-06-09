@@ -1,0 +1,22 @@
+networks:
+  proxy:
+    external: true
+  mtg_data:
+    external: true
+
+services:
+  mtgsearch:
+    build: .
+    restart: unless-stopped
+    networks:
+      - proxy
+      - mtg_data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mtgsearch.rule=Host(`mtgsearch.${DOMAIN}`)"
+      - "traefik.http.routers.mtgsearch.entrypoints=web"
+      - "traefik.http.services.mtgsearch.loadbalancer.server.port=8000"
+      - "launcher.enable=true"
+      - "launcher.name=MTG Search"
+      - "launcher.description=Search MTG cards by name, type, color, format, and more"
+      - "launcher.url=https://mtgsearch.${DOMAIN}"
