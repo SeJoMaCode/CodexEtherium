@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Card Builder — Codex Etherium (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #171717; --ink-2: #404040; --ink-3: #737373; --ink-4: #a3a3a3;
+    --line: #e5e5e5; --panel: #fafafa;
+    --W: #B8860B; --U: #1D5C9E; --B: #4A3164; --R: #C1432F; --G: #2F7A54; --none: #5B6472;
+    --back: #1D5C9E;
+    --frame: #c9ccd1; --frame-deep: #9da2a9; --parch: #f4f1ea;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--ink); font-family: "Instrument Sans", sans-serif; }
+  button { font: inherit; color: inherit; }
+  .display { font-family: "Fraunces", serif; }
+
+  /* ── Site chrome ─────────────────────────────── */
+  header.site { display: flex; align-items: center; gap: 16px; padding: 14px 40px; border-bottom: 1px solid var(--line); }
+  header.site .brand { font-family: Fraunces, serif; font-weight: 600; font-size: 20px; white-space: nowrap; }
+  header.site .fake-search { flex: 1; height: 38px; border: 1px solid #d4d4d4; border-radius: 10px; padding: 0 14px; display: flex; align-items: center; color: var(--ink-4); font-size: 14px; }
+  header.site .tabs { display: flex; gap: 4px; font-size: 14px; }
+  header.site .tabs span { padding: 7px 12px; border-radius: 999px; color: var(--ink-3); }
+  header.site .tabs span.on { background: var(--ink); color: #fff; }
+  .mock-ribbon { background: #fffbeb; border-bottom: 1px solid #fde68a; color: #92400e; font-size: 12.5px; padding: 7px 40px; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 40px 60px; display: grid; grid-template-columns: 400px 1fr; gap: 44px; align-items: start; }
+  @media (max-width: 960px) { main { grid-template-columns: 1fr; padding: 20px; } header.site { padding: 12px 20px; } header.site .tabs { display: none; } }
+
+  .eyebrow { display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; }
+  .eyebrow i { width: 6px; height: 6px; border-radius: 2px; background: var(--accent, var(--none)); display: inline-block; }
+
+  /* ── Card stage ──────────────────────────────── */
+  .stage { position: sticky; top: 20px; }
+  .hint { font-size: 13px; color: var(--ink-3); margin: 0 0 14px; display: flex; gap: 8px; align-items: center; }
+  .hint b { color: var(--ink); font-weight: 600; }
+  .scene { perspective: 1600px; width: 360px; height: 502px; margin: 0 auto; position: relative; }
+  .flipper { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,.7,.2,1); }
+  .flipper.flipped { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .face.back { transform: rotateY(180deg); }
+
+  .card {
+    width: 100%; height: 100%; border-radius: 18px; background: #141414; padding: 13px;
+    box-shadow: 0 28px 55px -22px rgba(0,0,0,.45), 0 2px 0 rgba(255,255,255,.04) inset;
+  }
+  .frame {
+    height: 100%; border-radius: 9px 9px 14px 14px; padding: 9px 9px 7px; display: flex; flex-direction: column; gap: 6px;
+    background:
+      radial-gradient(120% 60% at 20% 0%, rgba(255,255,255,.45), transparent 60%),
+      linear-gradient(160deg, var(--frame) 0%, var(--frame-deep) 100%);
+    transition: background .5s;
+    position: relative;
+  }
+  .face.back .frame { filter: saturate(.9) brightness(.82); }
+
+  .region {
+    all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; align-items: center;
+    border-radius: 7px; transition: box-shadow .15s, transform .15s;
+  }
+  .region:hover, .region.open { box-shadow: 0 0 0 2px var(--ink), 0 0 0 5px rgba(23,23,23,.12); }
+  .region:focus-visible { box-shadow: 0 0 0 2px var(--ink), 0 0 0 5px rgba(29,92,158,.35); }
+  .region.locked { cursor: help; }
+  .region.locked:hover { box-shadow: 0 0 0 2px var(--ink-4); }
+  .ph { color: rgba(0,0,0,.38); font-style: italic; }
+
+  .bar {
+    background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(244,241,234,.95));
+    border: 1.5px solid rgba(0,0,0,.55); border-radius: 8px / 14px; height: 34px; padding: 0 10px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 2px 3px rgba(0,0,0,.2);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .name-r { flex: 1; min-width: 0; font-family: Fraunces, serif; font-weight: 600; font-size: 16px; height: 26px; padding: 0 4px; }
+  .name-r span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mana-r { gap: 3px; height: 26px; padding: 0 3px; flex-shrink: 0; }
+  .pip { width: 19px; height: 19px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; color: #1a1a1a; box-shadow: 0 1px 1px rgba(0,0,0,.35); }
+  .pip.W { background: #F8F1D8; } .pip.U { background: #A9D3EE; } .pip.B { background: #CBC2BF; } .pip.R { background: #F1A98C; } .pip.G { background: #9BD3AE; }
+  .pip.mv { background: #d6d3cd; width: auto; padding: 0 6px; border-radius: 10px; font-size: 10.5px; }
+  .pip.empty { background: transparent; border: 1.5px dashed rgba(0,0,0,.3); box-shadow: none; color: rgba(0,0,0,.35); }
+  .mode-tag { font-size: 9px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: rgba(0,0,0,.45); margin-right: 2px; }
+  .indicator { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,.6); margin-right: 6px; flex-shrink: 0; }
+
+  .art-r {
+    height: 196px; margin: 0 4px; border: 1.5px solid rgba(0,0,0,.6); border-radius: 3px; flex-direction: column; justify-content: center; gap: 8px; padding: 14px; text-align: center;
+    background:
+      repeating-linear-gradient(135deg, rgba(0,0,0,.035) 0 10px, transparent 10px 20px),
+      radial-gradient(80% 90% at 50% 100%, var(--art-glow, rgba(91,100,114,.35)), transparent 70%),
+      linear-gradient(180deg, #ecebe7, #dcd9d2);
+  }
+  .art-r .ph { font-size: 13px; }
+  .art-r .glyph { font-size: 26px; opacity: .35; }
+
+  .type-r { flex: 1; min-width: 0; font-family: Fraunces, serif; font-weight: 600; font-size: 13.5px; height: 26px; padding: 0 4px; }
+  .type-r span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .set-r { width: 30px; height: 26px; justify-content: center; flex-shrink: 0; }
+
+  .text-r {
+    flex: 1; margin: 0 4px; border: 1.5px solid rgba(0,0,0,.45); border-radius: 3px; flex-direction: column; align-items: stretch; justify-content: flex-start;
+    background: linear-gradient(180deg, #f8f6f0, var(--parch)); padding: 10px 12px; gap: 6px; font-size: 13px; line-height: 1.4; overflow: hidden;
+  }
+  .text-r .kw { font-weight: 700; }
+  .text-r .phrase { font-family: Fraunces, serif; }
+  .text-r .neg { color: #b91c1c; font-weight: 700; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+  .chiprow { display: flex; flex-wrap: wrap; gap: 4px; }
+  .mini { font-size: 10.5px; padding: 2px 7px; border-radius: 999px; background: rgba(0,0,0,.07); border: 1px solid rgba(0,0,0,.12); }
+  .mini.join { background: none; border: none; color: var(--ink-3); padding: 2px 0; font-style: italic; }
+  .flavor-r { border-top: 1px solid rgba(0,0,0,.18); margin: 0 4px; padding: 6px 12px; font-family: Fraunces, serif; font-style: italic; font-size: 12px; color: #444; min-height: 30px; border-radius: 0 0 3px 3px; background: var(--parch); border-left: 1.5px solid rgba(0,0,0,.45); border-right: 1.5px solid rgba(0,0,0,.45); border-bottom: 1.5px solid rgba(0,0,0,.45); margin-top: -7px; }
+
+  .foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; padding: 0 4px; min-height: 30px; }
+  .artist-r { font-size: 10px; color: rgba(0,0,0,.65); padding: 3px 5px; letter-spacing: .02em; flex-direction: column; align-items: flex-start; }
+  .artist-r .setline { font-weight: 700; letter-spacing: .08em; }
+  .pt-r {
+    min-width: 66px; height: 30px; justify-content: center; padding: 0 10px; font-family: Fraunces, serif; font-weight: 700; font-size: 15px;
+    background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(244,241,234,.95)); border: 1.5px solid rgba(0,0,0,.55); border-radius: 8px / 12px; box-shadow: 0 2px 3px rgba(0,0,0,.2); margin-bottom: 2px;
+  }
+
+  .back-tab {
+    position: absolute; right: 0; top: 56px; transform: translateX(100%); background: var(--back); color: #fff; font-size: 11.5px; font-weight: 600;
+    writing-mode: vertical-rl; padding: 12px 6px; border-radius: 0 9px 9px 0; cursor: pointer; border: none; max-height: 260px; text-align: left;
+    box-shadow: 0 8px 16px -8px rgba(29,92,158,.6); animation: tab-in .35s ease-out; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .back-tab small { font-weight: 400; opacity: .85; margin-top: 6px; }
+  @keyframes tab-in { from { opacity: 0; transform: translateX(80%); } }
+  @media (max-width: 960px) { .back-tab { writing-mode: horizontal-tb; right: auto; left: 50%; top: auto; bottom: -40px; transform: translateX(-50%); border-radius: 9px; padding: 7px 12px; max-width: 300px; } }
+
+  .stage-actions { display: flex; justify-content: center; gap: 8px; margin-top: 18px; }
+  .pill-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); border: 1px solid #d4d4d4; border-radius: 999px; padding: 7px 14px; background: #fff; cursor: pointer; transition: all .15s; }
+  .pill-btn:hover { color: var(--ink); border-color: #a3a3a3; }
+  .pill-btn.on { background: var(--back); border-color: var(--back); color: #fff; }
+  .face-label { text-align: center; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-4); margin-top: 10px; }
+  .face-label.backside { color: var(--back); }
+
+  /* ── Right column ────────────────────────────── */
+  .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  h1.title { font-family: Fraunces, serif; font-weight: 600; font-size: 34px; line-height: 1.1; margin: 0; }
+  .accent-rule { width: 40px; height: 3px; border-radius: 3px; background: var(--accent, var(--none)); margin: 12px 0 10px; transition: background .4s; }
+  .lede { color: var(--ink-2); font-size: 15px; line-height: 1.55; margin: 0; max-width: 560px; }
+
+  .panel { background: var(--panel); border: 1px solid rgba(229,229,229,.8); border-radius: 18px; padding: 20px; }
+  .query-box { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13.5px; line-height: 1.9; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-height: 52px; word-break: break-word; }
+  .query-box .tk { padding: 2px 5px; border-radius: 5px; margin-right: 2px; }
+  .tk.front { background: #f5f5f5; color: var(--ink); }
+  .tk.card { background: #fff; color: var(--ink-2); border: 1px dashed #d4d4d4; }
+  .tk.back { background: rgba(29,92,158,.1); color: var(--back); cursor: pointer; border: 1px solid rgba(29,92,158,.25); }
+  .tk.back:hover { background: rgba(29,92,158,.18); }
+  .tk.meta { color: var(--ink-4); }
+  .query-empty { color: var(--ink-4); font-family: "Instrument Sans", sans-serif; font-style: italic; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11.5px; color: var(--ink-3); margin-top: 10px; }
+  .legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .legend .l-front::before { background: #e5e5e5; } .legend .l-card::before { border: 1px dashed #a3a3a3; } .legend .l-back::before { background: rgba(29,92,158,.35); }
+  textarea.raw { width: 100%; min-height: 80px; font-family: ui-monospace, Menlo, monospace; font-size: 13.5px; border: 1px solid #d4d4d4; border-radius: 12px; padding: 12px 14px; resize: vertical; }
+  .custom-note { margin-top: 10px; font-size: 12.5px; color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 8px 12px; }
+  .q-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+  .count { font-size: 13px; color: var(--ink-3); margin-right: auto; }
+  .count b { color: var(--ink); font-family: Fraunces, serif; font-size: 18px; font-weight: 600; }
+  .go { background: var(--ink); color: #fff; border: none; border-radius: 999px; padding: 9px 18px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .go:hover { background: #333; }
+  .ghost { background: none; border: none; color: var(--ink-3); font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 22px; }
+  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+  .field label.lbl { display: block; font-size: 12px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; }
+  .field .sub { font-size: 11.5px; color: var(--ink-4); margin-top: 4px; }
+
+  /* shared controls */
+  select, input[type=text], input[type=number] {
+    font: inherit; font-size: 13px; border: 1px solid #d4d4d4; border-radius: 8px; padding: 6px 9px; background: #fff; color: var(--ink); min-width: 0;
+  }
+  input:focus, select:focus, textarea:focus { outline: 2px solid rgba(23,23,23,.15); border-color: #737373; }
+  .op-row { display: flex; gap: 6px; }
+  .op-row select { width: 64px; } .op-row input { width: 80px; }
+  .seg { display: inline-flex; border: 1px solid #d4d4d4; border-radius: 999px; overflow: hidden; font-size: 12px; background: #fff; }
+  .seg button { border: none; background: none; padding: 5px 11px; cursor: pointer; color: var(--ink-3); }
+  .seg button.on { background: var(--ink); color: #fff; }
+  .seg.neg button.on.not { background: #b91c1c; }
+  .checks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .check { font-size: 12.5px; padding: 5px 11px; border-radius: 999px; border: 1px solid #d4d4d4; background: #fff; cursor: pointer; color: var(--ink-2); }
+  .check.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border: 1px solid #d4d4d4; border-radius: 10px; background: #fff; align-items: center; }
+  .chips input { border: none; padding: 3px 4px; flex: 1; min-width: 110px; outline: none; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 3px 6px 3px 10px; border-radius: 999px; background: var(--ink); color: #fff; }
+  .chip button { border: none; background: rgba(255,255,255,.2); color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; line-height: 1; cursor: pointer; padding: 0; }
+  .suggest { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+  .suggest button { font-size: 11.5px; border: 1px dashed #d4d4d4; background: none; border-radius: 999px; padding: 3px 9px; color: var(--ink-3); cursor: pointer; }
+  .suggest button:hover { border-style: solid; color: var(--ink); }
+  .fmt-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .fmt-row select { flex: 1; }
+  .x { border: none; background: none; color: var(--ink-4); cursor: pointer; font-size: 14px; }
+  .add { font-size: 12px; color: var(--ink-3); background: none; border: 1px dashed #d4d4d4; border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+
+  /* ── Popover ─────────────────────────────────── */
+  .pop {
+    position: absolute; z-index: 40; width: 340px; background: #fff; border: 1px solid #e5e5e5; border-radius: 16px; padding: 16px 16px 14px;
+    box-shadow: 0 24px 50px -18px rgba(0,0,0,.28), 0 2px 6px rgba(0,0,0,.05); animation: pop-in .18s ease-out;
+  }
+  @keyframes pop-in { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+  .pop h3 { margin: 0; font-family: Fraunces, serif; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .pop h3 .face-badge { font-family: "Instrument Sans", sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 7px; border-radius: 999px; background: #f5f5f5; color: var(--ink-3); }
+  .pop h3 .face-badge.back { background: rgba(29,92,158,.12); color: var(--back); }
+  .pop .desc { font-size: 12.5px; color: var(--ink-3); margin: 4px 0 14px; line-height: 1.45; }
+  .pop .stack { display: flex; flex-direction: column; gap: 14px; }
+  .pop .rowtop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .pop .rowtop label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .pop .close { position: absolute; top: 12px; right: 12px; border: none; background: none; font-size: 18px; color: var(--ink-4); cursor: pointer; }
+  .pop .done { margin-top: 14px; width: 100%; padding: 8px; border-radius: 10px; border: none; background: var(--ink); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
+  .color-pick { display: flex; gap: 8px; }
+  .color-pick button { width: 38px; height: 38px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; font-weight: 700; font-size: 14px; opacity: .45; transition: all .15s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+  .color-pick button.on { opacity: 1; border-color: var(--ink); transform: translateY(-2px); }
+  .note { font-size: 12px; color: var(--ink-3); background: #f5f5f5; border-radius: 10px; padding: 9px 11px; line-height: 1.45; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 13px; padding: 10px 16px; border-radius: 999px; z-index: 60; max-width: 90vw; box-shadow: 0 10px 30px -10px rgba(0,0,0,.4); animation: pop-in .2s ease-out; }
+  .toast code { font-family: ui-monospace, Menlo, monospace; background: rgba(255,255,255,.12); padding: 1px 6px; border-radius: 5px; }
+  footer { border-top: 1px solid var(--line); padding: 20px 40px; font-size: 12px; color: var(--ink-4); }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="brand">Codex Etherium</div>
+  <div class="fake-search">Search cards… e.g. t:creature r:mythic f:modern</div>
+  <div class="tabs"><span>Syntax help</span><span class="on">Card builder</span></div>
+</header>
+<div class="mock-ribbon">Mockup: the card, popovers and query generation all work. The match count and results are placeholders.</div>
+
+<main>
+  <section class="stage">
+    <p class="hint">👆 <span>Click <b>any part of the card</b> to describe what you're looking for.</span></p>
+    <div class="scene" id="scene">
+      <div class="flipper" id="flipper">
+        <div class="face front" id="faceFront"></div>
+        <div class="face back" id="faceBack"></div>
+      </div>
+      <button class="back-tab" id="backTab" hidden></button>
+    </div>
+    <div class="face-label" id="faceLabel">Front face</div>
+    <div class="stage-actions">
+      <button class="pill-btn" id="flipBtn"><span aria-hidden>⇄</span> <span id="flipTxt">Turn over</span></button>
+      <button class="pill-btn" id="resetBtn">Reset card</button>
+    </div>
+  </section>
+
+  <section class="col">
+    <div>
+      <h1 class="title">Build a search, one card at a time</h1>
+      <div class="accent-rule" id="accentRule"></div>
+      <p class="lede">Fill in the blank card with what you want: colors in the mana cost, types on the type line, words in the text box. Turn it over to search double-faced cards by their back. Codex Etherium writes the query for you.</p>
+    </div>
+
+    <div class="panel">
+      <p class="eyebrow"><i></i>Your query</p>
+      <div id="queryWrap"></div>
+      <div class="legend"><span class="l-front">front face</span><span class="l-card">whole card</span><span class="l-back">back face, click to flip</span></div>
+      <div class="q-actions">
+        <span class="count" id="count"></span>
+        <button class="ghost" id="editRaw">Edit as text</button>
+        <button class="go" id="goBtn">Search →</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="eyebrow"><i></i>Not printed on the card</p>
+      <div class="grid2" id="sidePanel"></div>
+    </div>
+  </section>
+</main>
+<footer>Card data: MTGJSON • Images and prices: Scryfall (CC BY 4.0)</footer>
+
+<div id="popHost"></div>
+
+<script>
+/* ───────────────────────── State ───────────────────────── */
+const COLORS = ["W", "U", "B", "R", "G"];
+const COLOR_HEX = { W: "#B8860B", U: "#1D5C9E", B: "#4A3164", R: "#C1432F", G: "#2F7A54" };
+const FRAME = {
+  none: ["#d3d6da", "#a3a8ae"], W: ["#f3ecd7", "#d8cba3"], U: ["#cfe1f1", "#8fb5d6"], B: ["#cdc6d1", "#8e8396"],
+  R: ["#f3d2c6", "#d99a84"], G: ["#cfe5d7", "#8fbea0"], multi: ["#efdfa3", "#cfb05c"],
+};
+const ART_GLOW = { none: "rgba(91,100,114,.35)", W: "rgba(184,134,11,.35)", U: "rgba(29,92,158,.35)", B: "rgba(74,49,100,.4)", R: "rgba(193,67,47,.35)", G: "rgba(47,122,84,.35)", multi: "rgba(184,134,11,.45)" };
+const RARITY = { common: "#1a1a1a", uncommon: "#9aa4ad", rare: "#c9a227", mythic: "#d4572a" };
+const FORMATS = ["standard", "pioneer", "modern", "legacy", "vintage", "commander", "oathbreaker", "pauper", "brawl", "historic", "alchemy", "explorer", "timeless"];
+const FLAGS = ["reserved", "promo", "reprint", "fullart", "colorless", "multicolor"];
+const SUGGEST = {
+  types: ["creature", "instant", "sorcery", "artifact", "enchantment", "land", "planeswalker", "battle", "legendary", "equipment", "aura", "elf", "dragon", "zombie", "vehicle"],
+  keywords: ["flying", "trample", "deathtouch", "lifelink", "haste", "vigilance", "flash", "ward", "menace", "hexproof"],
+  otags: ["ramp", "card-advantage", "removal", "draw", "tutor", "board-wipe", "counterspell", "mana-rock", "sacrifice-outlet", "token-generator", "lifegain"],
+  atags: ["dragon", "forest", "sword", "skull", "moon", "ocean", "castle", "spiral", "lightning", "angel"],
+};
+const OPS = ["=", "<", "<=", ">", ">="];
+const OP_GLYPH = { "=": "", "<": "<", "<=": "≤", ">": ">", ">=": "≥" };
+
+const blankFace = () => ({
+  name: "", nameNeg: false,
+  colors: [], colorMode: "including", colorTarget: "c",
+  mvOp: "=", mv: "",
+  types: [], typesNeg: false,
+  keywords: [], phrases: [], otags: [], otagAny: false, textNeg: false,
+  flavor: "",
+  powOp: ">=", pow: "", touOp: ">=", tou: "",
+});
+const blankCard = () => ({
+  atags: [], atagAny: false, artist: "",
+  set: "", rarities: [],
+  formats: [], flags: [],
+  edhOp: "<=", edh: "", jankOp: ">=", jank: "",
+  sort: "name", order: "asc",
+});
+let S = { front: blankFace(), back: blankFace(), backNeg: false, side: "front", card: blankCard(), raw: null };
+let openRegion = null;
+
+/* ───────────────────────── Query generation ───────────────────────── */
+const q = (v) => (/[\s:()"]/.test(v) ? `"${v.replace(/"/g, "")}"` : v);
+const tok = (key, v) => `${key}:${q(v)}`;
+function group(tokens, any, neg) {
+  if (tokens.length === 0) return [];
+  if (any && tokens.length > 1) return [`${neg ? "-" : ""}(${tokens.join(" OR ")})`];
+  return tokens.map((t) => (neg ? "-" : "") + t);
+}
+function faceTokens(f, isBack) {
+  const out = [];
+  if (f.name.trim()) out.push((f.nameNeg ? "-" : "") + q(f.name.trim()));
+  if (f.colors.length) {
+    const op = { including: ">=", exactly: "=", atmost: "<=" }[f.colorMode];
+    const key = isBack ? "c" : f.colorTarget;
+    out.push(`${key}${op}${f.colors.join("").toLowerCase()}`);
+  }
+  if (!isBack && f.mv !== "") out.push(`mv${f.mvOp}${f.mv}`);
+  out.push(...f.types.map((t) => (f.typesNeg ? "-" : "") + tok("t", t)));
+  out.push(...f.keywords.map((k) => (f.textNeg ? "-" : "") + tok("keyword", k)));
+  out.push(...f.phrases.map((p) => (f.textNeg ? "-" : "") + `o:"${p}"`));
+  out.push(...group(f.otags.map((t) => tok("otag", t)), f.otagAny, f.textNeg));
+  if (f.flavor.trim()) out.push(`ft:"${f.flavor.trim()}"`);
+  if (f.pow !== "") out.push(`pow${f.powOp}${f.pow}`);
+  if (f.tou !== "") out.push(`tou${f.touOp}${f.tou}`);
+  return out;
+}
+function cardTokens(c) {
+  const out = [];
+  out.push(...group(c.atags.map((t) => tok("atag", t)), c.atagAny, false));
+  if (c.artist.trim()) out.push(tok("artist", c.artist.trim()));
+  if (c.set.trim()) out.push(tok("s", c.set.trim().toLowerCase()));
+  out.push(...group(c.rarities.map((r) => `r:${r}`), true, false));
+  c.formats.forEach((f) => out.push(`${f.legal ? "" : "-"}f:${f.name}`));
+  c.flags.forEach((f) => out.push(`is:${f}`));
+  if (c.edh !== "") out.push(`edhrank${c.edhOp}${c.edh}`);
+  if (c.jank !== "") out.push(`jank${c.jankOp}${c.jank}`);
+  return out;
+}
+function segments() {
+  const segs = [];
+  faceTokens(S.front, false).forEach((t) => segs.push({ t, kind: "front" }));
+  cardTokens(S.card).forEach((t) => segs.push({ t, kind: "card" }));
+  const back = faceTokens(S.back, true);
+  if (back.length) segs.push({ t: `${S.backNeg ? "-" : ""}back:(${back.join(" ")})`, kind: "back" });
+  if (S.card.sort !== "name") segs.push({ t: `sort:${S.card.sort}`, kind: "meta" });
+  if (S.card.order !== "asc") segs.push({ t: `order:${S.card.order}`, kind: "meta" });
+  return segs;
+}
+const queryString = () => segments().map((s) => s.t).join(" ");
+
+/* ───────────────────────── Card rendering ───────────────────────── */
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const hasBack = () => faceTokens(S.back, true).length > 0;
+function colorKey(colors) { return colors.length === 0 ? "none" : colors.length > 1 ? "multi" : colors[0]; }
+
+function setSymbol(rarities, locked) {
+  const id = "g" + Math.random().toString(36).slice(2, 7);
+  const cols = rarities.length ? rarities.map((r) => RARITY[r]) : ["rgba(0,0,0,.28)"];
+  const stops = cols.map((c, i) => `<stop offset="${(i / cols.length) * 100}%" stop-color="${c}"/><stop offset="${((i + 1) / cols.length) * 100}%" stop-color="${c}"/>`).join("");
+  return `<svg width="22" height="22" viewBox="0 0 24 24" style="opacity:${locked ? 0.45 : 1}">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${stops}</linearGradient></defs>
+    <path d="M12 1.5 21 6v6.5c0 5-3.9 8.6-9 10-5.1-1.4-9-5-9-10V6z" fill="url(#${id})" stroke="#111" stroke-width="1.3" ${rarities.length ? "" : 'stroke-dasharray="2.5 2"'}/>
+    <path d="M12 6.5 16 12l-4 5.5L8 12z" fill="rgba(255,255,255,.55)"/></svg>`;
+}
+
+function faceHTML(side) {
+  const f = S[side], c = S.card, isBack = side === "back";
+  const ck = colorKey(f.colors);
+  const [f1, f2] = FRAME[ck];
+
+  let mana;
+  if (isBack) {
+    mana = f.colors.length
+      ? `<span class="indicator" style="background:conic-gradient(${f.colors.map((x, i) => `${COLOR_HEX[x]} ${(i / f.colors.length) * 360}deg ${((i + 1) / f.colors.length) * 360}deg`).join(",")})"></span>`
+      : `<span class="pip empty">◐</span>`;
+  } else {
+    const pips = f.colors.map((x) => `<span class="pip ${x}">${x}</span>`).join("");
+    const modeTag = f.colors.length ? `<span class="mode-tag">${f.colorTarget === "id" ? "id " : ""}${{ including: "≥", exactly: "=", atmost: "≤" }[f.colorMode]}</span>` : "";
+    const mv = f.mv !== "" ? `<span class="pip mv">mv ${OP_GLYPH[f.mvOp]}${esc(f.mv)}</span>` : "";
+    mana = pips || mv ? modeTag + pips + mv : `<span class="pip empty">+</span>`;
+  }
+
+  const name = f.name.trim() ? `<span>${f.nameNeg ? "not " : ""}${esc(f.name)}</span>` : `<span class="ph">${isBack ? "Any back-face name" : "Any name"}</span>`;
+  const type = f.types.length
+    ? `<span>${f.typesNeg ? "Not " : ""}${f.types.map((t) => esc(t[0].toUpperCase() + t.slice(1))).join(f.typesNeg ? ", " : " ")}</span>`
+    : `<span class="ph">Any type</span>`;
+
+  const lines = [];
+  if (f.textNeg && (f.keywords.length || f.phrases.length || f.otags.length)) lines.push(`<span class="neg">Without</span>`);
+  if (f.keywords.length) lines.push(`<span class="kw">${f.keywords.map((k) => esc(k[0].toUpperCase() + k.slice(1))).join(", ")}</span>`);
+  f.phrases.forEach((p) => lines.push(`<span class="phrase">“…${esc(p)}…”</span>`));
+  if (f.otags.length) {
+    const chips = f.otags.map((t) => `<span class="mini">${esc(t)}</span>`);
+    lines.push(`<span class="chiprow">${chips.join(`<span class="mini join">${f.otagAny ? "or" : "and"}</span>`)}</span>`);
+  }
+  const text = lines.length ? lines.join("") : `<span class="ph">Rules text, keywords, or what the card does…</span>`;
+  const flavor = f.flavor.trim() ? esc(f.flavor) : `<span class="ph" style="font-size:11.5px">Flavor text</span>`;
+  const pt = f.pow !== "" || f.tou !== ""
+    ? `${f.pow !== "" ? OP_GLYPH[f.powOp] + esc(f.pow) : "*"}/${f.tou !== "" ? OP_GLYPH[f.touOp] + esc(f.tou) : "*"}`
+    : `<span class="ph" style="font-size:13px">P / T</span>`;
+
+  let art;
+  if (isBack) art = `<span class="glyph">↺</span><span class="ph">Art, artist, set and rarity<br/>are shared with the front</span>`;
+  else if (c.atags.length || c.artist) {
+    art = `<span class="chiprow" style="justify-content:center">${c.atags.map((t) => `<span class="mini" style="background:rgba(255,255,255,.7)">${esc(t)}</span>`).join(`<span class="mini join">${c.atagAny ? "or" : "and"}</span>`)}</span>`
+      + (c.artist ? `<span style="font-size:12px;color:#444">by ${esc(c.artist)}</span>` : "");
+  } else art = `<span class="glyph">✦</span><span class="ph">Any art: click to search by<br/>what's in the illustration</span>`;
+
+  const setline = c.set ? c.set.toUpperCase() : "SET";
+  const rar = c.rarities.length ? " • " + c.rarities.map((r) => r[0].toUpperCase()).join("/") : "";
+
+  return `
+  <div class="card">
+    <div class="frame" style="--frame:${f1};--frame-deep:${f2};--art-glow:${ART_GLOW[ck]}">
+      <div class="bar">
+        <button class="region name-r ${openRegion === side + ":name" ? "open" : ""}" data-region="name" aria-label="Card name">${name}</button>
+        <button class="region mana-r ${openRegion === side + ":mana" ? "open" : ""}" data-region="mana" aria-label="${isBack ? "Color indicator" : "Mana cost and colors"}">${mana}</button>
+      </div>
+      <button class="region art-r ${isBack ? "locked" : ""} ${openRegion === side + ":art" ? "open" : ""}" data-region="art" aria-label="Illustration">${art}</button>
+      <div class="bar">
+        <button class="region type-r ${openRegion === side + ":type" ? "open" : ""}" data-region="type" aria-label="Type line">${type}</button>
+        <button class="region set-r ${isBack ? "locked" : ""} ${openRegion === side + ":set" ? "open" : ""}" data-region="set" aria-label="Set and rarity">${setSymbol(c.rarities, isBack)}</button>
+      </div>
+      <button class="region text-r ${openRegion === side + ":text" ? "open" : ""}" data-region="text" aria-label="Rules text">${text}</button>
+      <button class="region flavor-r ${openRegion === side + ":flavor" ? "open" : ""}" data-region="flavor" aria-label="Flavor text">${flavor}</button>
+      <div class="foot">
+        <button class="region artist-r ${isBack ? "locked" : ""}" data-region="art" aria-label="Artist">
+          <span class="setline">${esc(setline)}${rar}</span>
+          <span>✎ Illus. ${c.artist ? esc(c.artist) : "any artist"}</span>
+        </button>
+        <button class="region pt-r ${openRegion === side + ":pt" ? "open" : ""}" data-region="pt" aria-label="Power and toughness">${pt}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ───────────────────────── Popovers ───────────────────────── */
+function seg(action, options, value, extraClass = "") {
+  return `<div class="seg ${extraClass}">${options.map(([v, label, cls = ""]) =>
+    `<button data-act="${action}" data-val="${v}" class="${value === v ? "on" : ""} ${cls}">${label}</button>`).join("")}</div>`;
+}
+const negSeg = (action, neg) => seg(action, [["is", "is"], ["not", "is not", "not"]], neg ? "not" : "is", "neg");
+function chips(list, field, placeholder, suggestKey) {
+  const sug = (SUGGEST[suggestKey] || []).filter((s) => !list.includes(s)).slice(0, 12);
+  return `<div class="chips">${list.map((v, i) => `<span class="chip">${esc(v)}<button data-act="rmchip" data-field="${field}" data-i="${i}" aria-label="Remove">✕</button></span>`).join("")}
+    <input type="text" data-chip="${field}" placeholder="${placeholder}" /></div>
+    ${sug.length ? `<div class="suggest">${sug.map((s) => `<button data-act="addchip" data-field="${field}" data-val="${s}">+ ${s}</button>`).join("")}</div>` : ""}`;
+}
+function opRow(opField, op, valField, val, ph = "") {
+  return `<div class="op-row"><select data-set="${opField}">${OPS.map((o) => `<option ${o === op ? "selected" : ""}>${o}</option>`).join("")}</select>
+    <input type="number" data-set="${valField}" value="${esc(val)}" placeholder="${ph}" /></div>`;
+}
+
+const POPS = {
+  name: (f) => ({
+    title: "Name", desc: "Matches part of the card name, upper or lower case doesn't matter.",
+    body: `<div><div class="rowtop"><label>Name</label>${negSeg("nameNeg", f.name && f.nameNeg)}</div>
+      <input type="text" data-set="name" value="${esc(f.name)}" placeholder="e.g. bolt, &quot;sol ring&quot;" style="width:100%" /></div>`,
+  }),
+  mana: (f, back) => back ? ({
+    title: "Color indicator", desc: "Back faces usually have no mana cost. Their color comes from the dot next to the name.",
+    body: colorBody(f, true),
+  }) : ({
+    title: "Mana cost & colors", desc: "Pick colors, then how strictly they should match.",
+    body: colorBody(f, false) + `<div><div class="rowtop"><label>Mana value</label></div>${opRow("mvOp", f.mvOp, "mv", f.mv, "any")}</div>`,
+  }),
+  type: (f) => ({
+    title: "Type line", desc: "Card types, supertypes and subtypes. All of them must be on the type line.",
+    body: `<div><div class="rowtop"><label>Types</label>${negSeg("typesNeg", f.typesNeg)}</div>${chips(f.types, "types", "Type and press Enter…", "types")}</div>`,
+  }),
+  text: (f) => ({
+    title: "Text box", desc: "What the card says or does. Oracle tags describe a card's role, e.g. ramp or removal.",
+    body: `<div class="rowtop"><label>Match cards that</label>${seg("textNeg", [["is", "have this"], ["not", "don't have this", "not"]], f.textNeg ? "not" : "is", "neg")}</div>
+      <div><div class="rowtop"><label>Keywords</label></div>${chips(f.keywords, "keywords", "flying, ward…", "keywords")}</div>
+      <div><div class="rowtop"><label>Rules text contains</label></div>${chips(f.phrases, "phrases", "e.g. draw a card ⏎", "")}</div>
+      <div><div class="rowtop"><label>Oracle tags</label>${f.otags.length > 1 ? seg("otagAny", [["all", "All"], ["any", "Any"]], f.otagAny ? "any" : "all") : ""}</div>${chips(f.otags, "otags", "Search tags…", "otags")}</div>`,
+  }),
+  flavor: (f) => ({
+    title: "Flavor text", desc: "The italic text under the rules.",
+    body: `<input type="text" data-set="flavor" value="${esc(f.flavor)}" placeholder="e.g. Urza" style="width:100%" />`,
+  }),
+  pt: (f) => ({
+    title: "Power / toughness", desc: "Leave one blank to match any value.",
+    body: `<div class="grid2" style="gap:12px"><div><div class="rowtop"><label>Power</label></div>${opRow("powOp", f.powOp, "pow", f.pow, "any")}</div>
+      <div><div class="rowtop"><label>Toughness</label></div>${opRow("touOp", f.touOp, "tou", f.tou, "any")}</div></div>`,
+  }),
+  art: (_, back) => back ? lockedPop("Illustration") : ({
+    title: "Illustration", desc: "Illustration tags describe what's in the art. They apply to the whole card.",
+    card: true,
+    body: `<div><div class="rowtop"><label>Illustration tags</label>${S.card.atags.length > 1 ? seg("atagAny", [["all", "All"], ["any", "Any"]], S.card.atagAny ? "any" : "all") : ""}</div>${chips(S.card.atags, "atags", "Search illustration tags…", "atags")}</div>
+      <div><div class="rowtop"><label>Artist</label></div><input type="text" data-cset="artist" value="${esc(S.card.artist)}" placeholder="e.g. Rebecca Guay" style="width:100%" /></div>`,
+  }),
+  set: (_, back) => back ? lockedPop("Set & rarity") : ({
+    title: "Set & rarity", desc: "The set symbol's color shows the rarity. Pick more than one to match any of them.",
+    card: true,
+    body: `<div><div class="rowtop"><label>Rarity</label></div><div class="checks">${Object.keys(RARITY).map((r) =>
+        `<button class="check ${S.card.rarities.includes(r) ? "on" : ""}" data-act="rarity" data-val="${r}"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${RARITY[r]};margin-right:5px"></span>${r}</button>`).join("")}</div></div>
+      <div><div class="rowtop"><label>Set code</label></div><input type="text" data-cset="set" value="${esc(S.card.set)}" placeholder="e.g. mh3, trk" style="width:100%" />
+      <div class="sub" style="font-size:11.5px;color:#a3a3a3;margin-top:5px">Real version: autocomplete from the sets list, with symbols.</div></div>`,
+  }),
+};
+function colorBody(f, back) {
+  return `<div><div class="color-pick">${COLORS.map((c) =>
+      `<button class="pip ${c} ${f.colors.includes(c) ? "on" : ""}" data-act="color" data-val="${c}" aria-pressed="${f.colors.includes(c)}">${c}</button>`).join("")}</div></div>
+    <div><div class="rowtop"><label>Match</label></div>${seg("colorMode", [["including", "Including"], ["exactly", "Exactly"], ["atmost", "At most"]], f.colorMode)}</div>
+    ${back ? "" : `<div><div class="rowtop"><label>Use for</label></div>${seg("colorTarget", [["c", "Card colors"], ["id", "Commander identity"]], f.colorTarget)}</div>`}`;
+}
+function lockedPop(title) {
+  return { title, desc: "", body: `<div class="note">Art, artist, set and rarity describe the <b>whole card</b>, not one face. Edit them on the front.</div>
+    <button class="pill-btn" data-act="toFront" style="align-self:flex-start">⇄ Turn to front</button>` };
+}
+
+function openPop(region, anchor) {
+  openRegion = `${S.side}:${region}`;
+  renderPop(anchor);
+  renderCard();
+}
+function closePop() { openRegion = null; document.getElementById("popHost").innerHTML = ""; renderCard(); }
+
+function renderPop(anchorEl) {
+  if (!openRegion) return;
+  const [side, region] = openRegion.split(":");
+  const isBack = side === "back";
+  const spec = POPS[region](S[side], isBack);
+  const host = document.getElementById("popHost");
+  const focused = document.activeElement?.dataset?.chip || document.activeElement?.dataset?.set || document.activeElement?.dataset?.cset;
+  host.innerHTML = `<div class="pop" id="pop" role="dialog" aria-label="${spec.title}">
+    <button class="close" data-act="close" aria-label="Close">×</button>
+    <h3>${spec.title}<span class="face-badge ${isBack && !spec.card ? "back" : ""}">${spec.card ? "whole card" : isBack ? "back face" : "front face"}</span></h3>
+    <p class="desc">${spec.desc}</p>
+    <div class="stack">${spec.body}</div>
+    <button class="done" data-act="close">Done</button></div>`;
+  positionPop(anchorEl);
+  if (focused) {
+    const el = host.querySelector(`[data-chip="${focused}"],[data-set="${focused}"],[data-cset="${focused}"]`);
+    if (el) { el.focus(); if (el.setSelectionRange && el.type === "text") el.setSelectionRange(el.value.length, el.value.length); }
+  } else host.querySelector("input")?.focus({ preventScroll: true });
+}
+let lastAnchorRect = null;
+function positionPop(anchorEl) {
+  const pop = document.getElementById("pop");
+  if (!pop) return;
+  if (anchorEl) lastAnchorRect = anchorEl.getBoundingClientRect();
+  const scene = document.getElementById("scene").getBoundingClientRect();
+  const r = lastAnchorRect || scene;
+  const w = pop.offsetWidth, h = pop.offsetHeight, vw = innerWidth;
+  let left, top;
+  if (scene.right + 24 + w < vw) { left = scene.right + 24; top = r.top - 10; }
+  else { left = Math.max(12, Math.min(vw - w - 12, r.left + r.width / 2 - w / 2)); top = r.bottom + 10; }
+  top = Math.max(12, Math.min(top, innerHeight - h - 12));
+  pop.style.left = left + scrollX + "px";
+  pop.style.top = top + scrollY + "px";
+}
+
+/* ───────────────────────── Side panel ───────────────────────── */
+function renderSide() {
+  const c = S.card;
+  document.getElementById("sidePanel").innerHTML = `
+    <div class="field" style="grid-column:1/-1"><label class="lbl">Format legality</label>
+      ${c.formats.map((f, i) => `<div class="fmt-row">
+        <select data-fmt="${i}">${FORMATS.map((x) => `<option ${x === f.name ? "selected" : ""}>${x}</option>`).join("")}</select>
+        ${seg("fmtLegal", [["legal", "Legal"], ["not", "Not legal", "not"]], f.legal ? "legal" : "not", "neg").replace(/data-act="fmtLegal"/g, `data-act="fmtLegal" data-i="${i}"`)}
+        <button class="x" data-act="rmfmt" data-i="${i}" aria-label="Remove">✕</button></div>`).join("")}
+      <button class="add" data-act="addfmt">+ Add format</button>
+      <div class="sub">Format legality always applies to the whole card, never inside back:(). Back faces have no legality data.</div></div>
+    <div class="field" style="grid-column:1/-1"><label class="lbl">Flags</label><div class="checks">${FLAGS.map((f) =>
+      `<button class="check ${c.flags.includes(f) ? "on" : ""}" data-act="flag" data-val="${f}">${f}</button>`).join("")}</div></div>
+    <div class="field"><label class="lbl">EDHREC rank</label>${opRow("edhOp", c.edhOp, "edh", c.edh, "any").replace(/data-set=/g, "data-cset=")}<div class="sub">Lower is more popular</div></div>
+    <div class="field"><label class="lbl">Jank score</label>${opRow("jankOp", c.jankOp, "jank", c.jank, "0–10").replace(/data-set=/g, "data-cset=")}</div>
+    <div class="field"><label class="lbl">Sort by</label><div class="op-row">
+      <select data-cset="sort" style="width:auto">${["name", "mv", "edhrec", "usd", "usd_foil", "tix", "jank"].map((s) => `<option ${s === c.sort ? "selected" : ""}>${s}</option>`).join("")}</select>
+      ${seg("order", [["asc", "↑ Asc"], ["desc", "↓ Desc"]], c.order)}</div></div>`;
+}
+
+/* ───────────────────────── Render ───────────────────────── */
+function renderCard() {
+  document.getElementById("faceFront").innerHTML = faceHTML("front");
+  document.getElementById("faceBack").innerHTML = faceHTML("back");
+  document.getElementById("flipper").classList.toggle("flipped", S.side === "back");
+  const label = document.getElementById("faceLabel");
+  label.textContent = S.side === "back" ? (S.backNeg ? "Back face · must NOT match" : "Back face · also matches split, adventure & flip halves") : "Front face";
+  label.classList.toggle("backside", S.side === "back");
+  document.getElementById("flipTxt").textContent = S.side === "back" ? "Turn to front" : "Turn over";
+  document.getElementById("flipBtn").classList.toggle("on", S.side === "back");
+
+  const tab = document.getElementById("backTab");
+  const back = faceTokens(S.back, true);
+  tab.hidden = !(S.side === "front" && back.length);
+  tab.innerHTML = `${S.backNeg ? "Back must not be" : "Back"} ▸ <small>${esc(back.join(" "))}</small>`;
+  tab.title = "Turn over to edit the back face";
+
+  const ck = colorKey(S.front.colors);
+  document.documentElement.style.setProperty("--accent", ck === "none" ? "#5B6472" : ck === "multi" ? "#B8860B" : COLOR_HEX[ck]);
+}
+function renderQuery() {
+  const wrap = document.getElementById("queryWrap");
+  const editBtn = document.getElementById("editRaw");
+  if (S.raw !== null) {
+    editBtn.textContent = "Back to card";
+    const matches = S.raw.trim() === queryString();
+    wrap.innerHTML = `<textarea class="raw" id="rawBox">${esc(S.raw)}</textarea>
+      ${matches ? "" : `<div class="custom-note"><b>Custom query.</b> This can't be shown on the card (yet), so the card is frozen. The text is what gets searched. Real version: queries the card <i>can</i> show are loaded back onto it.</div>`}`;
+    document.getElementById("rawBox").addEventListener("input", (e) => { S.raw = e.target.value; renderQuery(); const b = document.getElementById("rawBox"); b.focus(); b.setSelectionRange(b.value.length, b.value.length); });
+  } else {
+    editBtn.textContent = "Edit as text";
+    const segs = segments();
+    wrap.innerHTML = `<div class="query-box">${segs.length ? segs.map((s) => `<span class="tk ${s.kind}" ${s.kind === "back" ? 'data-act="toBack" title="Turn the card over"' : ""}>${esc(s.t)}</span>`).join(" ") : `<span class="query-empty">Click the card to start. Your query appears here.</span>`}</div>`;
+  }
+  const n = segments().length;
+  // Placeholder: the real version runs a debounced search with page_size=1 and shows its total.
+  const fake = n === 0 ? "—" : Math.max(1, Math.round(31000 / Math.pow(2.6, n))).toLocaleString();
+  document.getElementById("count").innerHTML = `<b>${fake}</b> cards match <span style="color:#a3a3a3">(placeholder)</span>`;
+}
+function renderAll(anchor) { renderCard(); renderQuery(); renderSide(); if (openRegion) renderPop(anchor); }
+
+/* ───────────────────────── Events ───────────────────────── */
+const curFace = () => S[openRegion ? openRegion.split(":")[0] : S.side];
+function flip(to) {
+  S.side = to ?? (S.side === "front" ? "back" : "front");
+  openRegion = null; document.getElementById("popHost").innerHTML = "";
+  renderAll();
+}
+
+document.getElementById("scene").addEventListener("click", (e) => {
+  const reg = e.target.closest(".region");
+  if (!reg || !reg.closest(`.face.${S.side}`)) return;
+  const key = `${S.side}:${reg.dataset.region}`;
+  if (openRegion === key) return closePop();
+  openPop(reg.dataset.region, reg);
+});
+document.getElementById("backTab").addEventListener("click", () => flip("back"));
+document.getElementById("flipBtn").addEventListener("click", () => flip());
+document.getElementById("resetBtn").addEventListener("click", () => {
+  S = { front: blankFace(), back: blankFace(), backNeg: false, side: "front", card: blankCard(), raw: null };
+  openRegion = null; document.getElementById("popHost").innerHTML = ""; renderAll();
+});
+document.getElementById("editRaw").addEventListener("click", () => { S.raw = S.raw === null ? queryString() : null; renderQuery(); });
+document.getElementById("goBtn").addEventListener("click", () => {
+  const qs = S.raw ?? queryString();
+  toast(qs ? `Would open <code>/?q=${esc(qs)}</code>` : "Add something to the card first");
+});
+function toast(html) {
+  document.querySelector(".toast")?.remove();
+  const t = document.createElement("div"); t.className = "toast"; t.innerHTML = html; document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// Delegated handlers for popover + side panel + query box
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-act]");
+  if (!b) {
+    if (openRegion && !e.target.closest(".pop") && !e.target.closest(".region")) closePop();
+    return;
+  }
+  const f = curFace(), c = S.card, v = b.dataset.val, i = +b.dataset.i;
+  switch (b.dataset.act) {
+    case "close": return closePop();
+    case "toFront": return flip("front");
+    case "toBack": return flip("back");
+    case "nameNeg": f.nameNeg = v === "not"; break;
+    case "typesNeg": f.typesNeg = v === "not"; break;
+    case "textNeg": f.textNeg = v === "not"; break;
+    case "otagAny": f.otagAny = v === "any"; break;
+    case "atagAny": c.atagAny = v === "any"; break;
+    case "colorMode": f.colorMode = v; break;
+    case "colorTarget": f.colorTarget = v; break;
+    case "color": f.colors = f.colors.includes(v) ? f.colors.filter((x) => x !== v) : COLORS.filter((x) => x === v || f.colors.includes(x)); break;
+    case "rarity": c.rarities = c.rarities.includes(v) ? c.rarities.filter((x) => x !== v) : Object.keys(RARITY).filter((x) => x === v || c.rarities.includes(x)); break;
+    case "flag": c.flags = c.flags.includes(v) ? c.flags.filter((x) => x !== v) : [...c.flags, v]; break;
+    case "order": c.order = v; break;
+    case "addfmt": c.formats.push({ name: "commander", legal: true }); break;
+    case "rmfmt": c.formats.splice(i, 1); break;
+    case "fmtLegal": c.formats[i].legal = v === "legal"; break;
+    case "addchip": chipTarget(b.dataset.field).push(v); break;
+    case "rmchip": chipTarget(b.dataset.field).splice(i, 1); break;
+    case "backNeg": S.backNeg = v === "not"; break;
+    default: return;
+  }
+  S.raw = null;
+  renderAll();
+});
+function chipTarget(field) { return field === "atags" ? S.card.atags : curFace()[field]; }
+
+document.addEventListener("input", (e) => {
+  const t = e.target;
+  if (t.dataset.set) { curFace()[t.dataset.set] = t.value; }
+  else if (t.dataset.cset) { S.card[t.dataset.cset] = t.value; }
+  else if (t.dataset.fmt !== undefined) { S.card.formats[+t.dataset.fmt].name = t.value; }
+  else return;
+  S.raw = null;
+  renderCard(); renderQuery();
+  if (t.tagName === "SELECT" && t.closest("#sidePanel")) renderSide();
+});
+document.addEventListener("keydown", (e) => {
+  const t = e.target;
+  if (e.key === "Escape" && openRegion) return closePop();
+  if (t.dataset?.chip && e.key === "Enter" && t.value.trim()) {
+    e.preventDefault();
+    const list = chipTarget(t.dataset.chip), v = t.value.trim().toLowerCase();
+    if (!list.includes(v)) list.push(v);
+    t.value = ""; S.raw = null; renderAll();
+  }
+  if (t.dataset?.chip && e.key === "Backspace" && !t.value) {
+    const list = chipTarget(t.dataset.chip);
+    if (list.length) { list.pop(); S.raw = null; renderAll(); }
+  }
+});
+addEventListener("resize", () => positionPop());
+
+// Back-face "matches / doesn't match" control lives under the card while flipped.
+const backCtl = document.createElement("div");
+backCtl.className = "stage-actions";
+backCtl.id = "backCtl";
+document.querySelector(".stage").appendChild(backCtl);
+const _renderCard = renderCard;
+renderCard = function () {
+  _renderCard();
+  backCtl.style.display = S.side === "back" ? "flex" : "none";
+  backCtl.innerHTML = `<span style="font-size:12.5px;color:#737373;align-self:center">Back face</span>${seg("backNeg", [["is", "matches"], ["not", "doesn't match", "not"]], S.backNeg ? "not" : "is", "neg")}`;
+};
+
+renderAll();
+</script>
+</body>
+</html>

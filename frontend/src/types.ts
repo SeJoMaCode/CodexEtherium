@@ -84,6 +84,9 @@ export interface CardDetail extends CardSummary {
   legalities: Legalities | null;
   rulings: Ruling[];
   faces: FaceSummary[];
+  oracle_tags: string[];
+  art_tags: string[];
+  layout: string | null;
 }
 
 export interface CardSearchResponse {
@@ -91,6 +94,19 @@ export interface CardSearchResponse {
   page: number;
   page_size: number;
   cards: CardSummary[];
+}
+
+export interface PrintingSummary {
+  uuid: string;
+  set_code: string | null;
+  set_name: string | null;
+  number: string | null;
+  rarity: string | null;
+  release_date: string | null;
+  is_reprint: boolean;
+  is_canonical: boolean;
+  image_uris: ImageUris | null;
+  prices: Prices | null;
 }
 
 export type SortField = "name" | "mv" | "edhrec" | "usd" | "usd_foil" | "tix";

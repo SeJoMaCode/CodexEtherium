@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+html, body {
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: "Fraunces", serif;
+}
+
+.font-body {
+  font-family: "Instrument Sans", sans-serif;
+}
+
+@keyframes tile-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes crown-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

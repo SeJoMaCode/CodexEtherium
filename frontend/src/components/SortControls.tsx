@@ -17,12 +17,12 @@ const FIELDS: { value: SortField; label: string }[] = [
 
 export default function SortControls({ sort, order, onChange }: Props) {
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-500">Sort:</label>
+    <div className="flex items-center gap-2 font-body">
+      <label className="text-sm text-neutral-500">Sort:</label>
       <select
         value={sort}
         onChange={(e) => onChange(e.target.value as SortField, order)}
-        className="bg-gray-800 border border-gray-700 text-gray-200 text-sm rounded px-2 py-1 focus:outline-none focus:border-amber-500"
+        className="bg-white border border-neutral-300 text-neutral-700 text-sm rounded-lg px-2 py-1 focus:outline-none focus:border-neutral-900"
       >
         {FIELDS.map((f) => (
           <option key={f.value} value={f.value}>{f.label}</option>
@@ -30,7 +30,7 @@ export default function SortControls({ sort, order, onChange }: Props) {
       </select>
       <button
         onClick={() => onChange(sort, order === "asc" ? "desc" : "asc")}
-        className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-sm px-2 py-1 rounded transition-colors"
+        className="bg-white hover:border-neutral-500 border border-neutral-300 text-neutral-600 text-sm px-2 py-1 rounded-lg transition-colors"
         title={order === "asc" ? "Ascending" : "Descending"}
       >
         {order === "asc" ? "↑ Asc" : "↓ Desc"}

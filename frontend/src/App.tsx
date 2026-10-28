@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SearchPage from "./pages/SearchPage";
 import SyntaxPage from "./pages/SyntaxPage";
+import CardPage from "./pages/CardPage";
+import CardDropZone from "./components/CardDropZone";
 
 export default function App() {
   return (
@@ -8,7 +10,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<SearchPage />} />
         <Route path="/syntax" element={<SyntaxPage />} />
+        <Route path="/card/:uuid" element={<CardPage />} />
       </Routes>
+      <CardDropZone />
     </BrowserRouter>
   );
 }

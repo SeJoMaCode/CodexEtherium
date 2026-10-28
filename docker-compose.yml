@@ -1,3 +1,5 @@
+name: codexetherium
+
 networks:
   proxy:
     external: true
@@ -5,7 +7,7 @@ networks:
     external: true
 
 services:
-  mtgsearch:
+  codexetherium:
     build: .
     restart: unless-stopped
     networks:
@@ -13,10 +15,12 @@ services:
       - mtg_data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mtgsearch.rule=Host(`mtgsearch.${DOMAIN}`)"
-      - "traefik.http.routers.mtgsearch.entrypoints=web"
-      - "traefik.http.services.mtgsearch.loadbalancer.server.port=8000"
+      - "traefik.http.routers.codexetherium.rule=Host(`codexetherium.${DOMAIN}`)"
+      - "traefik.http.routers.codexetherium.entrypoints=web"
+      - "traefik.http.services.codexetherium.loadbalancer.server.port=8000"
       - "launcher.enable=true"
-      - "launcher.name=MTG Search"
+      - "launcher.name=Codex Etherium"
       - "launcher.description=Search MTG cards by name, type, color, format, and more"
-      - "launcher.url=https://mtgsearch.${DOMAIN}"
+      - "launcher.url=https://codexetherium.${DOMAIN}"
+      - "launcher.group=MTG"
+      - "launcher.order=10"

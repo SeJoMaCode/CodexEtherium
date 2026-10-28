@@ -1,6 +1,6 @@
-# mtgSearch
+# Codex Etherium
 
-Card search UI for the mtgDB database. Subdomain: `mtgsearch.sejoma.net`.
+Card search UI for the mtgDB database. Subdomain: `codexetherium.sejoma.net`.
 
 React 19 + Vite + Tailwind v4 + TypeScript single-page app (`frontend/`), served
 by a minimal FastAPI backend (`backend/main.py`) that proxies `/api/*` to the

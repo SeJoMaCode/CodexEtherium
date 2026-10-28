@@ -1,56 +1,93 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { SyntaxDoc, SyntaxKeyword } from "../types";
+import SearchHeader from "../components/SearchHeader";
+
+const ACCENT = "#5B6472";
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="flex items-center gap-2 font-body text-xs font-semibold uppercase tracking-[0.1em] text-neutral-500 mb-4">
+      <span className="w-1.5 h-1.5 rounded-sm" style={{ backgroundColor: ACCENT }} />
+      {children}
+    </p>
+  );
+}
+
+function Panel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl bg-neutral-50 border border-neutral-200/70 p-5">
+      {children}
+    </div>
+  );
+}
+
+function CodeChip({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="font-mono text-xs bg-white border border-neutral-200 rounded-md px-2 py-1 text-neutral-700">
+      {children}
+    </code>
+  );
+}
 
 function KeywordCard({ kw }: { kw: SyntaxKeyword }) {
   return (
-    <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-      <div className="flex items-start gap-3 mb-2">
-        <code className="text-amber-400 font-bold text-lg">{kw.keyword}</code>
+    <div className="rounded-2xl bg-neutral-50 border border-neutral-200/70 p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-2">
+        <code className="font-mono text-[15px] font-semibold text-neutral-900">{kw.keyword}</code>
         {kw.aliases.length > 0 && (
-          <span className="text-gray-400 text-sm mt-1">
-            aliases: {kw.aliases.map((a) => <code key={a} className="text-gray-300 mx-1">{a}</code>)}
+          <span className="text-xs text-neutral-400">
+            aka{" "}
+            {kw.aliases.map((a, i) => (
+              <span key={a}>
+                <code className="font-mono text-neutral-500">{a}</code>
+                {i < kw.aliases.length - 1 && ", "}
+              </span>
+            ))}
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-300 mb-1">
-        <span className="text-gray-500">Field:</span> {kw.field}
-      </p>
-      <p className="text-sm text-gray-300 mb-1">
-        <span className="text-gray-500">Operators:</span>{" "}
-        {kw.operators.map((op) => (
-          <code key={op} className="bg-gray-700 px-1 rounded text-amber-300 mr-1">{op}</code>
-        ))}
-      </p>
-      <p className="text-sm text-gray-300 mb-3">{kw.notes}</p>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm mb-2.5">
+        <span className="text-neutral-500">{kw.field}</span>
+        <div className="flex flex-wrap gap-1">
+          {kw.operators.map((op) => (
+            <code key={op} className="font-mono text-xs bg-white border border-neutral-200 rounded px-1.5 py-0.5 text-neutral-700">
+              {op}
+            </code>
+          ))}
+        </div>
+      </div>
+
+      <p className="text-sm text-neutral-600 leading-relaxed mb-3">{kw.notes}</p>
+
       {kw.flags && (
         <div className="mb-3">
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Flags</p>
-          <div className="grid grid-cols-2 gap-1">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400 mb-1.5">Flags</p>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1">
             {Object.entries(kw.flags).map(([flag, desc]) => (
               <div key={flag} className="text-sm">
-                <code className="text-amber-300">{flag}</code>
-                <span className="text-gray-400 ml-2">{desc}</span>
+                <code className="font-mono text-xs text-neutral-700">{flag}</code>
+                <span className="text-neutral-500 ml-1.5">{desc}</span>
               </div>
             ))}
           </div>
         </div>
       )}
-      <div>
-        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Examples</p>
-        <div className="flex flex-wrap gap-2">
-          {kw.examples.map((ex) => (
-            <code key={ex} className="bg-gray-900 border border-gray-700 px-2 py-0.5 rounded text-sm text-green-400">
-              {ex}
-            </code>
-          ))}
-        </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {kw.examples.map((ex) => (
+          <code key={ex} className="font-mono text-xs bg-white border border-neutral-200 rounded-md px-2 py-1 text-neutral-700">
+            {ex}
+          </code>
+        ))}
       </div>
     </div>
   );
 }
 
 export default function SyntaxPage() {
+  const navigate = useNavigate();
   const [doc, setDoc] = useState<SyntaxDoc | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,38 +99,26 @@ export default function SyntaxPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      <header className="bg-gray-900 border-b border-amber-900/40 px-4 py-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-4">
-          <Link
-            to="/"
-            className="text-amber-400 hover:text-amber-300 text-sm font-medium"
-          >
-            ← Back to search
-          </Link>
-          <h1 className="text-xl font-bold text-amber-400">Search Syntax</h1>
-        </div>
-      </header>
+    <div className="min-h-screen bg-white text-neutral-900 font-body flex flex-col">
+      <SearchHeader onSearch={(q) => navigate(`/?q=${encodeURIComponent(q)}`)} />
 
-      <main className="max-w-5xl mx-auto px-4 py-6">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-6 lg:px-10 pt-6 pb-16">
         {error && (
-          <p className="text-red-400 bg-red-900/20 border border-red-800 rounded p-3">{error}</p>
+          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-6">
+            {error}
+          </p>
         )}
 
         {!doc && !error && (
-          <p className="text-gray-500 text-center py-12">Loading syntax reference…</p>
+          <p className="text-neutral-400 text-center py-20">Loading syntax reference…</p>
         )}
 
         {doc && (
           <div className="space-y-8">
-            <section>
-              <p className="text-gray-300 leading-relaxed">{doc.overview}</p>
-            </section>
+            <p className="text-neutral-600 leading-relaxed">{doc.overview}</p>
 
             <section>
-              <h2 className="text-lg font-semibold text-amber-400 mb-4 border-b border-gray-800 pb-2">
-                Query Keywords
-              </h2>
+              <SectionTitle>Query Keywords</SectionTitle>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {doc.keywords.map((kw) => (
                   <KeywordCard key={kw.keyword} kw={kw} />
@@ -102,73 +127,75 @@ export default function SyntaxPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-amber-400 mb-3 border-b border-gray-800 pb-2">
-                Bare Words (Name Search)
-              </h2>
-              <p className="text-gray-300 mb-3">{doc.bare_words.description}</p>
-              <div className="flex flex-wrap gap-2">
-                {doc.bare_words.examples.map((ex) => (
-                  <code key={ex} className="bg-gray-800 border border-gray-700 px-2 py-1 rounded text-sm text-green-400">
-                    {ex}
-                  </code>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-semibold text-amber-400 mb-3 border-b border-gray-800 pb-2">
-                Boolean Logic
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {Object.entries(doc.boolean).map(([op, desc]) => (
-                  <div key={op} className="bg-gray-800 rounded p-3 border border-gray-700">
-                    <code className="text-amber-300 font-bold">{op}</code>
-                    <p className="text-sm text-gray-300 mt-1">{desc}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-semibold text-amber-400 mb-3 border-b border-gray-800 pb-2">
-                Sorting
-              </h2>
-              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                <p className="text-sm text-gray-300 mb-2">
-                  <span className="text-gray-500">Sort fields:</span>{" "}
-                  {doc.sort.values.map((v) => (
-                    <code key={v} className="bg-gray-700 px-1 rounded text-amber-300 mr-1">{v}</code>
+              <SectionTitle>Bare Words (Name Search)</SectionTitle>
+              <Panel>
+                <p className="text-sm text-neutral-600 mb-3">{doc.bare_words.description}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {doc.bare_words.examples.map((ex) => (
+                    <CodeChip key={ex}>{ex}</CodeChip>
                   ))}
-                </p>
-                <p className="text-sm text-gray-300 mb-2">
-                  <span className="text-gray-500">Direction:</span>{" "}
-                  {doc.sort.direction_values.map((v) => (
-                    <code key={v} className="bg-gray-700 px-1 rounded text-amber-300 mr-1">{v}</code>
-                  ))}
-                </p>
-                <p className="text-sm text-gray-400">{doc.sort.notes}</p>
-              </div>
+                </div>
+              </Panel>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-amber-400 mb-3 border-b border-gray-800 pb-2">
-                Example Queries
-              </h2>
-              <div className="space-y-2">
-                {doc.examples.map((ex) => (
-                  <div key={ex.q} className="flex items-start gap-4 bg-gray-800/50 rounded p-3">
-                    <code className="text-green-400 text-sm shrink-0 min-w-0">{ex.q}</code>
-                    <span className="text-gray-400 text-sm">{ex.description}</span>
+              <SectionTitle>Boolean Logic</SectionTitle>
+              <Panel>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {Object.entries(doc.boolean).map(([op, desc]) => (
+                    <div key={op} className="rounded-xl border border-neutral-200 bg-white p-3">
+                      <code className="font-mono text-sm font-semibold text-neutral-900">{op}</code>
+                      <p className="text-sm text-neutral-600 mt-1">{desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+            </section>
+
+            <section>
+              <SectionTitle>Sorting</SectionTitle>
+              <Panel>
+                <div className="space-y-2.5 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-neutral-400">Sort fields</span>
+                    {doc.sort.values.map((v) => (
+                      <CodeChip key={v}>{v}</CodeChip>
+                    ))}
                   </div>
-                ))}
-              </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-neutral-400">Direction</span>
+                    {doc.sort.direction_values.map((v) => (
+                      <CodeChip key={v}>{v}</CodeChip>
+                    ))}
+                  </div>
+                  <p className="text-neutral-500 pt-1">{doc.sort.notes}</p>
+                </div>
+              </Panel>
+            </section>
+
+            <section>
+              <SectionTitle>Example Queries</SectionTitle>
+              <Panel>
+                <div className="divide-y divide-neutral-200/70">
+                  {doc.examples.map((ex) => (
+                    <div key={ex.q} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-2.5">
+                      <code className="font-mono text-xs bg-white border border-neutral-200 rounded-md px-2 py-1 text-neutral-700 shrink-0">
+                        {ex.q}
+                      </code>
+                      <span className="text-sm text-neutral-500">{ex.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
             </section>
           </div>
         )}
       </main>
 
-      <footer className="border-t border-gray-800 px-4 py-3 text-center text-xs text-gray-600 mt-8">
-        Card data: MTGJSON &bull; Images and prices: Scryfall (CC BY 4.0)
+      <footer className="border-t border-neutral-200 mt-6">
+        <p className="max-w-5xl mx-auto px-6 lg:px-10 py-6 font-body text-xs text-neutral-400">
+          Card data: MTGJSON &bull; Images and prices: Scryfall (CC BY 4.0)
+        </p>
       </footer>
     </div>
   );

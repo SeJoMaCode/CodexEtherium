@@ -2,7 +2,7 @@ import contextlib
 
 import httpx
 from fastapi import FastAPI, Request
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 MTG_API_BASE = "http://api:8000"
@@ -30,4 +30,9 @@ async def proxy(path: str, request: Request):
     )
 
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
+
+
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str):
+    return FileResponse("static/index.html")
