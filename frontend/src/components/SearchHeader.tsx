@@ -46,6 +46,12 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
         </form>
 
         <Link
+          to="/builder"
+          className="hidden sm:inline font-body text-sm text-neutral-500 hover:text-neutral-900 transition-colors shrink-0"
+        >
+          Card builder
+        </Link>
+        <Link
           to="/syntax"
           className="hidden sm:inline font-body text-sm text-neutral-500 hover:text-neutral-900 transition-colors shrink-0"
         >
