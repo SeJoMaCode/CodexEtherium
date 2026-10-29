@@ -1,5 +1,7 @@
 import { useCallback, useMemo, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import QueryPreview from "../builder/QueryPreview";
+import SidePanel from "../builder/SidePanel";
 import SearchHeader from "../components/SearchHeader";
 import BuilderCard from "../builder/BuilderCard";
 import { ACCENT, colorKey } from "../builder/constants";
@@ -38,6 +40,10 @@ export default function BuilderPage() {
   }, []);
 
   const closePopover = useCallback(() => setOpen(null), []);
+  const search = () => {
+    const q = query.trim();
+    if (q) navigate(`/?q=${encodeURIComponent(q)}`);
+  };
 
   const faceLabel = side === "back"
     ? state.backNeg ? "Back face · must NOT match" : "Back face · also matches split, adventure & flip halves"
@@ -99,7 +105,18 @@ export default function BuilderPage() {
               text box. Turn it over to search double-faced cards by their back. Codex Etherium writes the query for you.
             </p>
           </div>
-          <p className="font-mono text-sm text-neutral-600 break-words">{query || "—"}</p>
+          <QueryPreview
+            segments={segments}
+            raw={raw}
+            isCustom={isCustom}
+            preview={preview}
+            accent={accent}
+            onRawChange={setRaw}
+            onToggleRaw={() => setRaw((r) => (r === null ? generated : null))}
+            onBackClick={() => flip("back")}
+            onSearch={search}
+          />
+          <SidePanel card={state.card} accent={accent} dispatch={update} />
         </section>
       </main>
 
