@@ -7,6 +7,8 @@ import { NegToggle } from "../builder/controls";
 import { buildSegments, segmentsToQuery } from "../builder/query";
 import { builderReducer, type BuilderAction } from "../builder/reducer";
 import { blankState, type Region, type Side } from "../builder/types";
+import RegionPopover from "../builder/RegionPopover";
+import RegionEditor, { editorMeta } from "../builder/RegionEditor";
 import { useMatchPreview } from "../builder/useMatchPreview";
 
 export default function BuilderPage() {
@@ -34,6 +36,8 @@ export default function BuilderPage() {
   const onRegion = useCallback((region: Region, anchor: HTMLElement) => {
     setOpen((o) => (o?.region === region ? null : { region, anchor }));
   }, []);
+
+  const closePopover = useCallback(() => setOpen(null), []);
 
   const faceLabel = side === "back"
     ? state.backNeg ? "Back face · must NOT match" : "Back face · also matches split, adventure & flip halves"
@@ -99,6 +103,11 @@ export default function BuilderPage() {
         </section>
       </main>
 
+      {open && (
+        <RegionPopover anchor={open.anchor} {...editorMeta(open.region, side)} onClose={closePopover}>
+          <RegionEditor region={open.region} side={side} state={state} dispatch={update} onFlip={flip} />
+        </RegionPopover>
+      )}
       <footer className="border-t border-neutral-200 mt-6">
         <p className="max-w-6xl mx-auto px-6 lg:px-10 py-6 font-body text-xs text-neutral-400">
           Card data: MTGJSON &bull; Images and prices: Scryfall (CC BY 4.0)
