@@ -155,7 +155,8 @@ const SET_CODE = /^[a-z0-9]{2,6}$/i;
 /** Set code input with name/code autocomplete. Only code-shaped text is committed. */
 export function SetPicker({ value, onChange }: { value: string; onChange: (code: string) => void }) {
   const [text, setText] = useState(value);
-  const items = useSuggestions("set", text === value ? "" : text);
+  const [picked, setPicked] = useState(true);
+  const items = useSuggestions("set", picked ? "" : text);
   return (
     <>
       <input
@@ -167,13 +168,14 @@ export function SetPicker({ value, onChange }: { value: string; onChange: (code:
         onChange={(e) => {
           const t = e.target.value;
           setText(t);
+          setPicked(false);
           onChange(SET_CODE.test(t.trim()) ? t.trim().toLowerCase() : "");
         }}
       />
       {items.length > 0 && (
         <div className="cb-suggest">
           {items.map((s) => (
-            <button key={s.value} type="button" onClick={() => { setText(s.value); onChange(s.value); }}>
+            <button key={s.value} type="button" onClick={() => { setText(s.value); setPicked(true); onChange(s.value); }}>
               {s.label}
             </button>
           ))}
