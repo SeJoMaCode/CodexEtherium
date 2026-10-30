@@ -74,6 +74,8 @@ export default function RegionPopover({ anchor, title, badge, description, onClo
     ref.current?.querySelector<HTMLElement>(".cb-pop-body input, .cb-pop-body select, .cb-pop-body button")?.focus({ preventScroll: true });
   }, [anchor]);
 
+  const closeAndRestore = () => { onClose(); anchor.focus(); };
+
   return createPortal(
     <div
       ref={ref}
@@ -82,14 +84,14 @@ export default function RegionPopover({ anchor, title, badge, description, onClo
       className="cb-pop"
       style={pos ? { left: pos.left, top: pos.top } : undefined}
     >
-      <button type="button" className="cb-pop-close" aria-label="Close" onClick={onClose}>×</button>
+      <button type="button" className="cb-pop-close" aria-label="Close" onClick={closeAndRestore}>×</button>
       <h3 className="cb-pop-title">
         {title}
         <span className={`cb-badge${badge === "back face" ? " is-back" : ""}`}>{badge}</span>
       </h3>
       {description && <p className="cb-pop-desc">{description}</p>}
       <div className="cb-pop-body">{children}</div>
-      <button type="button" className="cb-pop-done" onClick={onClose}>Done</button>
+      <button type="button" className="cb-pop-done" onClick={closeAndRestore}>Done</button>
     </div>,
     document.body,
   );

@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Eyebrow } from "./controls";
 import type { Segment } from "./query";
 import type { MatchPreview } from "./useMatchPreview";
@@ -40,13 +41,16 @@ export default function QueryPreview({
             {segments.length === 0 ? (
               <span className="cb-query-empty">Click the card to start. Your query appears here.</span>
             ) : (
-              segments.map((s, i) =>
-                s.kind === "back" ? (
-                  <button key={i} type="button" className="cb-tk is-back" title="Turn the card over" onClick={onBackClick}>{s.text}</button>
-                ) : (
-                  <span key={i} className={`cb-tk is-${s.kind}`}>{s.text}</span>
-                ),
-              )
+              segments.map((s, i) => (
+                <Fragment key={i}>
+                  {i > 0 && " "}
+                  {s.kind === "back" ? (
+                    <button type="button" className="cb-tk is-back" title="Turn the card over" onClick={onBackClick}>{s.text}</button>
+                  ) : (
+                    <span className={`cb-tk is-${s.kind}`}>{s.text}</span>
+                  )}
+                </Fragment>
+              ))
             )}
           </div>
           <div className="cb-legend">
