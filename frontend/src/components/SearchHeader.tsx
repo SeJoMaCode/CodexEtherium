@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -57,7 +57,57 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
         >
           Syntax help →
         </Link>
+        <MobileMenu />
       </div>
     </header>
+  );
+}
+
+/** Phone-only "⋯" menu with the links the desktop header shows inline. */
+function MobileMenu() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const item = "block px-4 py-2.5 font-body text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900";
+
+  return (
+    <div ref={ref} className="relative sm:hidden shrink-0">
+      <button
+        type="button"
+        aria-label="More"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="w-9 h-9 flex items-center justify-center rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 text-lg leading-none transition-colors"
+      >
+        ⋯
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 top-full mt-2 w-44 z-30 bg-white border border-neutral-200 rounded-xl shadow-lg py-1">
+          <Link role="menuitem" to="/builder" className={item} onClick={() => setOpen(false)}>
+            ✦ Card builder
+          </Link>
+          <Link role="menuitem" to="/syntax" className={item} onClick={() => setOpen(false)}>
+            ? Syntax help
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }

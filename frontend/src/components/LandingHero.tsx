@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import type { CardSummary } from "../types";
 import CrownFan from "./CrownFan";
 
+const CHIP =
+  "inline-flex items-center gap-1.5 font-body text-sm text-neutral-600 border border-neutral-300 rounded-full px-3.5 py-1.5 hover:border-neutral-500 hover:text-neutral-900 transition-colors";
+
 interface Props {
   onSearch: (query: string) => void;
 }
@@ -25,19 +28,13 @@ export default function LandingHero({ onSearch }: Props) {
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 font-body flex flex-col">
-      <header className="flex items-center justify-between px-6 lg:px-10 py-4">
+      <header className="flex items-center px-6 lg:px-10 py-4">
         <Link
           to="/"
           className="font-display text-lg font-semibold text-neutral-900 hover:text-neutral-600 transition-colors"
         >
           <span className="sm:hidden">CE</span>
           <span className="hidden sm:inline">Codex Etherium</span>
-        </Link>
-        <Link
-          to="/syntax"
-          className="hidden sm:inline font-body text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
-        >
-          Syntax help →
         </Link>
       </header>
 
@@ -67,6 +64,15 @@ export default function LandingHero({ onSearch }: Props) {
             Search
           </button>
         </form>
+
+        <nav aria-label="Search help" className="flex flex-wrap justify-center gap-2 mt-5">
+          <Link to="/builder" className={CHIP}>
+            <span aria-hidden>✦</span> Build on a card
+          </Link>
+          <Link to="/syntax" className={CHIP}>
+            <span aria-hidden>?</span> Syntax guide
+          </Link>
+        </nav>
       </main>
     </div>
   );
