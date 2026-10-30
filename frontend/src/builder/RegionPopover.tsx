@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { bottomInset } from "./keyboardInset";
 
 interface Props {
   anchor: HTMLElement;
@@ -12,17 +13,27 @@ interface Props {
 
 const MOBILE = 960;
 
+type Placement =
+  | { kind: "beside"; left: number; top: number }
+  /** Bottom sheet, lifted above the on-screen keyboard and capped to the visible height. */
+  | { kind: "sheet"; bottom: number; maxHeight: number };
+
 /** Fixed-position popover to the right of the card (bottom sheet on small screens). */
 export default function RegionPopover({ anchor, title, badge, description, onClose, children }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
+  const [pos, setPos] = useState<Placement | null>(null);
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const place = () => {
       if (window.innerWidth < MOBILE) {
-        setPos(null);
+        const vv = window.visualViewport;
+        setPos({
+          kind: "sheet",
+          bottom: vv ? bottomInset(window.innerHeight, vv.height, vv.offsetTop) : 0,
+          maxHeight: Math.round((vv?.height ?? window.innerHeight) * 0.75),
+        });
         return;
       }
       const card = anchor.closest(".cb-scene")?.getBoundingClientRect() ?? anchor.getBoundingClientRect();
@@ -36,17 +47,23 @@ export default function RegionPopover({ anchor, title, badge, description, onClo
         top = r.bottom + 10;
       }
       top = Math.max(12, Math.min(top, window.innerHeight - h - 12));
-      setPos({ left, top });
+      setPos({ kind: "beside", left, top });
     };
     place();
     const ro = new ResizeObserver(place);
     ro.observe(el);
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, { passive: true });
+    // The keyboard opening/closing only changes the visual viewport.
+    const vv = window.visualViewport;
+    vv?.addEventListener("resize", place);
+    vv?.addEventListener("scroll", place);
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place);
+      vv?.removeEventListener("resize", place);
+      vv?.removeEventListener("scroll", place);
     };
   }, [anchor]);
 
@@ -82,7 +99,11 @@ export default function RegionPopover({ anchor, title, badge, description, onClo
       role="dialog"
       aria-label={title}
       className="cb-pop"
-      style={pos ? { left: pos.left, top: pos.top } : undefined}
+      style={
+        pos?.kind === "beside" ? { left: pos.left, top: pos.top }
+        : pos?.kind === "sheet" ? { bottom: pos.bottom, maxHeight: pos.maxHeight }
+        : undefined
+      }
     >
       <button type="button" className="cb-pop-close" aria-label="Close" onClick={closeAndRestore}>×</button>
       <h3 className="cb-pop-title">

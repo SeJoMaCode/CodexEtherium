@@ -67,7 +67,7 @@ export default function LandingHero({ onSearch }: Props) {
 
         <nav aria-label="Search help" className="flex flex-wrap justify-center gap-2 mt-5">
           <Link to="/builder" className={CHIP}>
-            <span aria-hidden>✦</span> Build on a card
+            <span aria-hidden>✦</span> Build a card
           </Link>
           <Link to="/syntax" className={CHIP}>
             <span aria-hidden>?</span> Syntax guide

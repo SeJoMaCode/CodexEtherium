@@ -98,11 +98,11 @@ export default function BuilderPage() {
 
         <section className="flex flex-col gap-5 min-w-0">
           <div>
-            <h1 className="font-display font-semibold text-4xl leading-[1.1]">Build a search, one card at a time</h1>
+            <h1 className="font-display font-semibold text-4xl leading-[1.1]">Build a card</h1>
             <div className="w-10 h-[3px] rounded-full mt-3 mb-3 transition-colors" style={{ backgroundColor: accent }} />
             <p className="text-neutral-700 leading-relaxed max-w-xl">
-              Fill in the blank card with what you want: colors in the mana cost, types on the type line, words in the
-              text box. Turn it over to search double-faced cards by their back. Codex Etherium writes the query for you.
+              Fill in the parts of the card you care about. Anything you leave blank matches every card. Turn the card
+              over to search the back of double-faced cards.
             </p>
           </div>
           <QueryPreview

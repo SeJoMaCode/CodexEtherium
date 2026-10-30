@@ -49,7 +49,7 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
           to="/builder"
           className="hidden sm:inline font-body text-sm text-neutral-500 hover:text-neutral-900 transition-colors shrink-0"
         >
-          Card builder
+          Build a card
         </Link>
         <Link
           to="/syntax"
@@ -101,7 +101,7 @@ function MobileMenu() {
       {open && (
         <div role="menu" className="absolute right-0 top-full mt-2 w-44 z-30 bg-white border border-neutral-200 rounded-xl shadow-lg py-1">
           <Link role="menuitem" to="/builder" className={item} onClick={() => setOpen(false)}>
-            ✦ Card builder
+            ✦ Build a card
           </Link>
           <Link role="menuitem" to="/syntax" className={item} onClick={() => setOpen(false)}>
             ? Syntax help
