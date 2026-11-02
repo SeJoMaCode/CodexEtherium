@@ -86,7 +86,7 @@ async function searchCards(q: string): Promise<CardSummary[]> {
 }
 
 async function findPrinting(setCode: string, number: string): Promise<CardSummary | null> {
-  const cards = await searchCards(`s:${setCode}`);
+  const cards = await searchCards(`++ s:${setCode}`);
   return cards.find((c) => c.number?.toLowerCase() === number.toLowerCase()) ?? null;
 }
 
