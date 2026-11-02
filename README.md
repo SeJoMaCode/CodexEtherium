@@ -16,6 +16,8 @@ mtgDB API (`http://api:8000`) over the shared `mtg_data` network.
 - `GET /api/cards/search?q=&sort=&order=&page=&page_size=`
 - `GET /api/cards/search/syntax`
 - `GET /api/cards/{uuid}`
+- `GET /api/cards/{uuid}/printings`
+- `GET /api/cards/{uuid}/decks`
 
 Card images are fetched directly from the Scryfall CDN (URLs come from mtgDB,
 never proxied). Data attribution: "Card data: MTGJSON. Images and prices:

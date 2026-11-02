@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDeckMatchLine } from "./decks";
+import { deckSearchQuery, deckTermValue, formatDeckMatchLine } from "./decks";
 import type { DeckSummary } from "../types";
 
 function deck(name: string, list_available = true): DeckSummary {
@@ -77,5 +77,21 @@ describe("formatDeckMatchLine", () => {
 
   it("ignores unpublished decks when a term also has published ones", () => {
     expect(formatDeckMatchLine([{ term: "x", decks: [deck("Out"), deck("Soon", false)] }])).toEqual(["Out"]);
+  });
+});
+
+describe("deckTermValue", () => {
+  it("leaves ordinary names alone", () => {
+    expect(deckTermValue("Urza's Iron Alliance")).toBe("Urza's Iron Alliance");
+  });
+
+  it("removes characters the parser would treat as syntax", () => {
+    expect(deckTermValue('Foo & Bar | "Baz"')).toBe("Foo Bar Baz");
+  });
+});
+
+describe("deckSearchQuery", () => {
+  it("builds a quoted deck: filter", () => {
+    expect(deckSearchQuery("Necron Dynasties")).toBe('deck:"Necron Dynasties"');
   });
 });

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { CardDetail, FaceSummary, Legalities, PrintingSummary } from "../types";
+import type { CardDetail, DeckSummary, FaceSummary, Legalities, PrintingSummary } from "../types";
 import SearchHeader from "../components/SearchHeader";
 import PrintingsPanel from "../components/PrintingsPanel";
+import PreconPanel from "../components/PreconPanel";
 import ManaText from "../components/ManaText";
 import { setCardDragData } from "../lib/cardDrag";
 
@@ -289,6 +290,7 @@ export default function CardPage() {
   const { uuid } = useParams<{ uuid: string }>();
   const [card, setCard] = useState<CardDetail | null>(null);
   const [printings, setPrintings] = useState<PrintingSummary[]>([]);
+  const [decks, setDecks] = useState<DeckSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -301,6 +303,7 @@ export default function CardPage() {
     setError(null);
     setCard(null);
     setPrintings([]);
+    setDecks([]);
     fetch(`/api/cards/${uuid}`)
       .then((r) => {
         if (!r.ok) throw new Error(`Error ${r.status}`);
@@ -314,6 +317,11 @@ export default function CardPage() {
       .then((r) => (r.ok ? r.json() : []))
       .then((data: PrintingSummary[]) => setPrintings(data))
       .catch(() => setPrintings([]));
+
+    fetch(`/api/cards/${uuid}/decks`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: DeckSummary[]) => setDecks(data))
+      .catch(() => setDecks([]));
   }, [uuid]);
 
   const goToSearch = (query: string) => navigate(`/?q=${encodeURIComponent(query)}`);
@@ -456,6 +464,12 @@ export default function CardPage() {
                 </Panel>
               )}
             </div>
+
+            {decks.length > 0 && (
+              <div className="mt-5">
+                <PreconPanel decks={decks} accent={accent} />
+              </div>
+            )}
 
             {card.legalities && (
               <div className="mt-5">

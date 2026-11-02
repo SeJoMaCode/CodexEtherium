@@ -25,3 +25,12 @@ export function formatDeckMatchLine(matches: DeckTermMatch[]): string[] {
   const hidden = names.length - MAX_NAMES;
   return [...names.slice(0, MAX_NAMES), ...(hidden > 0 ? [`+${hidden} more`] : []), ...problems];
 }
+
+/** A deck name that's safe inside quotes: the parser would split on | and &. */
+export function deckTermValue(name: string): string {
+  return name.replace(/[|&"]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+export function deckSearchQuery(name: string): string {
+  return `deck:"${deckTermValue(name)}"`;
+}
