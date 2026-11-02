@@ -89,11 +89,27 @@ export interface CardDetail extends CardSummary {
   layout: string | null;
 }
 
+export interface DeckSummary {
+  deck_id: string;
+  name: string;
+  set_code: string;
+  set_name: string | null;
+  release_date: string | null;
+  commanders: string[];
+  list_available: boolean;
+}
+
+export interface DeckTermMatch {
+  term: string;
+  decks: DeckSummary[];
+}
+
 export interface CardSearchResponse {
   total: number;
   page: number;
   page_size: number;
   cards: CardSummary[];
+  deck_matches?: DeckTermMatch[];
 }
 
 export interface PrintingSummary {

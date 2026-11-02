@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import type { CardSearchResponse, CardSummary, SortField, SortOrder } from "../types";
 import SearchHeader from "../components/SearchHeader";
 import SortControls from "../components/SortControls";
+import DeckMatchLine from "../components/DeckMatchLine";
 import CardGrid from "../components/CardGrid";
 import Pagination from "../components/Pagination";
 import LandingHero from "../components/LandingHero";
@@ -143,6 +144,8 @@ export default function SearchPage() {
                 <SortControls sort={sort} order={order} onChange={handleSort} />
               </div>
             )}
+
+            {results?.deck_matches && <DeckMatchLine matches={results.deck_matches} />}
 
             <CardGrid
               cards={results?.cards ?? EMPTY_CARDS}
