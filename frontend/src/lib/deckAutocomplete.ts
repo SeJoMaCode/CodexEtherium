@@ -47,3 +47,13 @@ export function applyDeckSuggestion(
   const inserted = `${token.key}"${deckTermValue(name)}"${after === "" ? " " : ""}`;
   return { value: before + inserted + after, cursor: before.length + inserted.length };
 }
+
+/** Rows fetched for `term`, or `empty` while they belong to an earlier term. */
+export function freshItems<T>(stored: { term: string; items: T[] } | null, term: string | null, empty: T[]): T[] {
+  return term !== null && stored?.term === term ? stored.items : empty;
+}
+
+/** The active row index, or -1 if a shorter list left it out of range. */
+export function clampActive(active: number, length: number): number {
+  return active < length ? active : -1;
+}

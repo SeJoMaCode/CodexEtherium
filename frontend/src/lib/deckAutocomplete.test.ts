@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyDeckSuggestion, findDeckToken } from "./deckAutocomplete";
+import { applyDeckSuggestion, clampActive, findDeckToken, freshItems } from "./deckAutocomplete";
 
 const atEnd = (value: string) => findDeckToken(value, value.length);
 
@@ -84,5 +84,32 @@ describe("applyDeckSuggestion", () => {
     const value = "deck:ne";
     const result = applyDeckSuggestion(value, atEnd(value)!, "Necron Dynasties");
     expect(findDeckToken(result.value, result.cursor)).toBeNull();
+  });
+});
+
+describe("freshItems", () => {
+  const none: string[] = [];
+  const stored = { term: "wa", items: ["a", "b"] };
+
+  it("returns rows only for the term they were fetched for", () => {
+    expect(freshItems(stored, "wa", none)).toEqual(["a", "b"]);
+    expect(freshItems(stored, "war", none)).toBe(none);
+  });
+
+  it("returns nothing without a term or a result", () => {
+    expect(freshItems(stored, null, none)).toBe(none);
+    expect(freshItems(null, "wa", none)).toBe(none);
+  });
+});
+
+describe("clampActive", () => {
+  it("keeps an index that is still in range", () => {
+    expect(clampActive(2, 5)).toBe(2);
+    expect(clampActive(-1, 5)).toBe(-1);
+  });
+
+  it("drops an index that a shorter list left out of range", () => {
+    expect(clampActive(5, 3)).toBe(-1);
+    expect(clampActive(0, 0)).toBe(-1);
   });
 });

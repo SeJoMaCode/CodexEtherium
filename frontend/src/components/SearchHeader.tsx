@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { useDeckSuggestions } from "../hooks/useDeckSuggestions";
-import { applyDeckSuggestion, findDeckToken } from "../lib/deckAutocomplete";
+import { applyDeckSuggestion, clampActive, findDeckToken } from "../lib/deckAutocomplete";
 import type { DeckSummary } from "../types";
 
 interface Props {
@@ -14,13 +14,14 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
   const [cursor, setCursor] = useState(0);
   const [focused, setFocused] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const [active, setActive] = useState(-1);
+  const [activeRaw, setActive] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingCursor = useRef<number | null>(null);
 
   const token = focused && !dismissed ? findDeckToken(value, cursor) : null;
   const suggestions = useDeckSuggestions(token?.term ?? null);
   const open = token !== null && suggestions.length > 0;
+  const active = clampActive(activeRaw, suggestions.length);
 
   useEffect(() => {
     setValue(initialQuery);
@@ -28,7 +29,7 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
 
   useEffect(() => {
     setActive(-1);
-  }, [token?.term]);
+  }, [token?.term, suggestions]);
 
   useLayoutEffect(() => {
     if (pendingCursor.current === null) return;
@@ -54,10 +55,10 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
     if (!open) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setActive((i) => (i + 1) % suggestions.length);
+      setActive((active + 1) % suggestions.length);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setActive((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
+      setActive(active <= 0 ? suggestions.length - 1 : active - 1);
     } else if (e.key === "Enter" && active >= 0) {
       e.preventDefault();
       accept(suggestions[active]);
@@ -119,12 +120,12 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
                       e.preventDefault();
                       accept(deck);
                     }}
-                    className={`px-3.5 py-1.5 font-body text-sm cursor-pointer truncate ${
+                    className={`px-3.5 py-1.5 font-body text-sm cursor-pointer ${
                       i === active ? "bg-neutral-100" : "hover:bg-neutral-50"
                     }`}
                   >
-                    <span className="text-neutral-900">{deck.name}</span>
-                    <span className="ml-2 text-xs text-neutral-400">
+                    <span className="block truncate text-neutral-900">{deck.name}</span>
+                    <span className="block truncate text-xs text-neutral-400">
                       {deck.list_available
                         ? [deck.commanders[0], deck.set_name].filter(Boolean).join(" · ")
                         : "list not published"}
