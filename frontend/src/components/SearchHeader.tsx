@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Link } from "react-router-dom";
+import { useDeckSuggestions } from "../hooks/useDeckSuggestions";
+import { applyDeckSuggestion, findDeckToken } from "../lib/deckAutocomplete";
+import type { DeckSummary } from "../types";
 
 interface Props {
   initialQuery?: string;
@@ -8,14 +11,62 @@ interface Props {
 
 export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
   const [value, setValue] = useState(initialQuery);
+  const [cursor, setCursor] = useState(0);
+  const [focused, setFocused] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const [active, setActive] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const pendingCursor = useRef<number | null>(null);
+
+  const token = focused && !dismissed ? findDeckToken(value, cursor) : null;
+  const suggestions = useDeckSuggestions(token?.term ?? null);
+  const open = token !== null && suggestions.length > 0;
 
   useEffect(() => {
     setValue(initialQuery);
   }, [initialQuery]);
 
+  useEffect(() => {
+    setActive(-1);
+  }, [token?.term]);
+
+  useLayoutEffect(() => {
+    if (pendingCursor.current === null) return;
+    inputRef.current?.setSelectionRange(pendingCursor.current, pendingCursor.current);
+    pendingCursor.current = null;
+  }, [value]);
+
   const submit = (e: FormEvent) => {
     e.preventDefault();
+    setDismissed(true);
     onSearch(value);
+  };
+
+  const accept = (deck: DeckSummary) => {
+    if (!token) return;
+    const next = applyDeckSuggestion(value, token, deck.name);
+    pendingCursor.current = next.cursor;
+    setValue(next.value);
+    setCursor(next.cursor);
+  };
+
+  const onKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (!open) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((i) => (i + 1) % suggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
+    } else if (e.key === "Enter" && active >= 0) {
+      e.preventDefault();
+      accept(suggestions[active]);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      accept(suggestions[Math.max(active, 0)]);
+    } else if (e.key === "Escape") {
+      setDismissed(true);
+    }
   };
 
   return (
@@ -30,13 +81,59 @@ export default function SearchHeader({ initialQuery = "", onSearch }: Props) {
         </Link>
 
         <form onSubmit={submit} className="flex-1 flex gap-2 min-w-0">
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder='Search cards… e.g. t:creature r:mythic f:modern'
-            className="flex-1 min-w-0 font-body text-sm bg-white border border-neutral-300 rounded-xl px-3.5 py-2 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
-          />
+          <div className="relative flex-1 min-w-0">
+            <input
+              ref={inputRef}
+              type="text"
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setCursor(e.target.selectionStart ?? e.target.value.length);
+                setDismissed(false);
+              }}
+              onSelect={(e) => setCursor(e.currentTarget.selectionStart ?? 0)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={onKeyDown}
+              role="combobox"
+              aria-expanded={open}
+              aria-controls="deck-suggestions"
+              aria-autocomplete="list"
+              aria-activedescendant={open && active >= 0 ? `deck-suggestion-${active}` : undefined}
+              placeholder='Search cards… e.g. t:creature r:mythic f:modern'
+              className="w-full font-body text-sm bg-white border border-neutral-300 rounded-xl px-3.5 py-2 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
+            />
+            {open && (
+              <ul
+                id="deck-suggestions"
+                role="listbox"
+                className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-neutral-200 rounded-xl shadow-lg py-1 overflow-hidden"
+              >
+                {suggestions.map((deck, i) => (
+                  <li
+                    key={deck.deck_id}
+                    id={`deck-suggestion-${i}`}
+                    role="option"
+                    aria-selected={i === active}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      accept(deck);
+                    }}
+                    className={`px-3.5 py-1.5 font-body text-sm cursor-pointer truncate ${
+                      i === active ? "bg-neutral-100" : "hover:bg-neutral-50"
+                    }`}
+                  >
+                    <span className="text-neutral-900">{deck.name}</span>
+                    <span className="ml-2 text-xs text-neutral-400">
+                      {deck.list_available
+                        ? [deck.commanders[0], deck.set_name].filter(Boolean).join(" · ")
+                        : "list not published"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <button
             type="submit"
             className="font-body text-sm font-medium bg-neutral-900 hover:bg-neutral-700 text-white px-4 py-2 rounded-xl transition-colors shrink-0"
